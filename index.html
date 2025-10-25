@@ -32,6 +32,7 @@
         #intro-screen.hidden {
             opacity: 0;
             pointer-events: none;
+            display: none;
         }
 
         #intro-text {
@@ -81,6 +82,12 @@
             object-fit: cover;
             z-index: 1;
             opacity: 0.7;
+            visibility: hidden;
+            transition: visibility 0s linear 1s;
+        }
+
+        #background-video.visible {
+            visibility: visible;
         }
 
         /* Profile Block */
@@ -100,18 +107,19 @@
             flex-direction: column;
             gap: 15px;
             backdrop-filter: blur(10px);
-            transition: transform 0.2s ease-out;
-            pointer-events: auto;
-            opacity: 0; /* Initially hidden */
             transition: opacity 1s ease, transform 0.2s ease-out;
+            pointer-events: auto;
+            opacity: 0;
+            visibility: hidden;
         }
 
         #profile-block.visible {
             opacity: 1;
+            visibility: visible;
         }
 
         #profile-block:hover {
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5); /* Glowing effect on hover */
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
         }
 
         .profile-header {
@@ -393,14 +401,20 @@
         // Handle Intro Screen and Audio
         const introScreen = document.getElementById('intro-screen');
         const profileBlock = document.getElementById('profile-block');
+        const backgroundVideo = document.getElementById('background-video');
         const audio = document.getElementById('background-audio');
         const notification = document.getElementById('notification');
 
-        introScreen.addEventListener('click', () => {
+        document.addEventListener('click', () => {
+            console.log('Click detected, hiding intro screen and starting audio');
             introScreen.classList.add('hidden');
             profileBlock.classList.add('visible');
+            backgroundVideo.classList.add('visible');
             audio.muted = false;
-            audio.play().catch(() => {
+            audio.play().then(() => {
+                console.log('Audio playback started successfully');
+            }).catch((error) => {
+                console.error('Audio playback failed:', error);
                 notification.textContent = 'Click again to enable audio';
                 notification.classList.add('show');
                 setTimeout(() => {
@@ -409,22 +423,7 @@
                     }
                 }, 3000);
             });
-            // Retry audio on subsequent clicks if needed
-            document.body.addEventListener('click', () => {
-                if (audio.muted || audio.paused) {
-                    audio.muted = false;
-                    audio.play().catch(() => {
-                        notification.textContent = 'Click again to enable audio';
-                        notification.classList.add('show');
-                        setTimeout(() => {
-                            if (notification.textContent === 'Click again to enable audio') {
-                                notification.classList.remove('show');
-                            }
-                        }, 3000);
-                    });
-                }
-            });
-        });
+        }, { once: true });
 
         // Typewriter Effect
         const bioElement = document.getElementById('profile-bio');
@@ -472,14 +471,13 @@
         });
 
         // Profile Block Tilt Effect
-        const profileBlock = document.getElementById('profile-block');
         profileBlock.addEventListener('mousemove', (e) => {
             if (profileBlock.classList.contains('visible')) {
                 const rect = profileBlock.getBoundingClientRect();
                 const x = e.clientX - rect.left - rect.width / 2;
                 const y = e.clientY - rect.top - rect.height / 2;
-                const tiltX = (y / rect.height) * 20; // Max 20 degrees tilt
-                const tiltY = -(x / rect.width) * 20; // Max 20 degrees tilt
+                const tiltX = (y / rect.height) * 20;
+                const tiltY = -(x / rect.width) * 20;
                 profileBlock.style.transform = `translate(-50%, -50%) perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
             }
         });
