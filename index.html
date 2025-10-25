@@ -375,14 +375,11 @@
         <div class="bio-separator"></div>
         <div class="profile-footer">
             <div class="social-links">
-                <button onclick="copyToClipboard('YOUR_DISCORD_LINK', 'Discord')" class="social-button">
-                    <img src="images/discord.png" alt="Discord">
-                </button>
                 <button onclick="copyToClipboard('bc1q7urjtd2naxmajcvylmmz5clqyc3mfmvauw9kmt', 'Bitcoin')" class="social-button">
                     <img src="bitcoin (1).png" alt="Bitcoin">
                 </button>
                 <button onclick="copyToClipboard('Lb5718yTJaK1wPkMd33USucPyN13kMtrGY', 'Litecoin')" class="social-button">
-                    <img src="litecoin.png" alt="Litecoin">
+                    <img src="litecoin (1).png" alt="Litecoin">
                 </button>
                 <button onclick="copyToClipboard('0xdaB1b433BD3AeB1ADbAA5724B9cC05EAf047be46', 'Ethereum')" class="social-button">
                     <img src="ethereum (3).png" alt="Ethereum">
@@ -502,7 +499,7 @@
         // Copy to Clipboard with Notification
         function copyToClipboard(value, type) {
             navigator.clipboard.writeText(value).then(() => {
-                notification.textContent = `Copied ${type} ${type === 'Discord' ? 'link' : 'address'}`;
+                notification.textContent = `Copied ${type} address`;
                 notification.classList.add('show');
                 setTimeout(() => {
                     notification.classList.remove('show');
