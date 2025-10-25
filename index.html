@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iayx Profile</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Custom Cursor */
+        .custom-cursor {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 10%, transparent 20%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+        }
+
+        body:not(.touch-device) {
+            cursor: none;
+        }
+
+        body {
+            background-color: #000;
+            color: #fff;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Background Video */
+        #background-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 1;
+            opacity: 0.7;
+        }
+
+        /* Profile Block */
+        #profile-block {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) perspective(1000px);
+            width: 820px;
+            min-height: 332px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 15px;
+            z-index: 20;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            backdrop-filter: blur(10px);
+            transition: transform 0.2s ease-out;
+            pointer-events: auto;
+        }
+
+        #profile-block:hover {
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5); /* Glowing effect on hover */
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .profile-container {
+            position: relative;
+            width: 150px;
+            height: 150px;
+        }
+
+        .profile-container::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 10px 10px, #00CED1 10%, transparent 15%);
+            animation: orbit 3s linear infinite;
+            z-index: -1;
+            filter: blur(1px);
+        }
+
+        .profile-picture {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+            pointer-events: auto;
+        }
+
+        .profile-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #profile-name {
+            font-size: 32px;
+            font-weight: bold;
+            letter-spacing: 3px;
+            color: #fff;
+            filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.7));
+        }
+
+        #profile-bio {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 18px;
+            line-height: 1.5;
+            margin: 10px 0;
+            white-space: nowrap;
+            overflow: hidden;
+            border-right: 2px solid #fff;
+            width: fit-content;
+        }
+
+        .bio-separator {
+            width: 100%;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.2);
+            margin: 20px 0;
+        }
+
+        .profile-footer {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            width: 100%;
+            margin-top: auto;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            pointer-events: auto;
+        }
+
+        .social-button {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.7));
+            cursor: pointer;
+            pointer-events: auto;
+        }
+
+        .social-button img {
+            width: 24px;
+            height: 24px;
+        }
+
+        .social-button:hover {
+            transform: scale(1.4) rotateY(15deg);
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            font-size: 14px;
+            z-index: 30;
+            backdrop-filter: blur(5px);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Animations */
+        @keyframes orbit {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Cursor Trail */
+        .cursor-trail-dot {
+            position: fixed;
+            width: 6px;
+            height: 6px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            transform: translate(-50%, -50%);
+            transition: opacity 0.3s ease;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 430px) {
+            #profile-block {
+                width: 90vw;
+                max-width: 350px;
+                min-height: 280px;
+                padding: 15px;
+            }
+
+            .profile-header {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .profile-container {
+                width: 120px;
+                height: 120px;
+            }
+
+            .profile-picture {
+                width: 120px;
+                height: 120px;
+            }
+
+            .profile-info {
+                align-items: center;
+                text-align: center;
+            }
+
+            #profile-name {
+                font-size: 24px;
+                letter-spacing: 2px;
+            }
+
+            #profile-bio {
+                font-size: 14px;
+                line-height: 1.4;
+            }
+
+            .social-links {
+                gap: 10px;
+            }
+
+            .social-button {
+                width: 32px;
+                height: 32px;
+            }
+
+            .social-button img {
+                width: 20px;
+                height: 20px;
+            }
+
+            .notification {
+                font-size: 12px;
+                padding: 8px 16px;
+                bottom: 10px;
+                right: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Custom Cursor -->
+    <div class="custom-cursor"></div>
+
+    <!-- Background Video -->
+    <video id="background-video" autoplay loop muted playsinline>
+        <source src="../Videos/background.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <!-- Profile Block -->
+    <div id="profile-block">
+        <div class="profile-header">
+            <div class="profile-container">
+                <img src="https://via.placeholder.com/300x150" alt="Profile" class="profile-picture">
+            </div>
+            <div class="profile-info">
+                <div id="profile-name">Iayx</div>
+                <div id="profile-bio"></div>
+            </div>
+        </div>
+        <div class="bio-separator"></div>
+        <div class="profile-footer">
+            <div class="social-links">
+                <button onclick="copyToClipboard('YOUR_DISCORD_LINK', 'Discord')" class="social-button">
+                    <img src="https://via.placeholder.com/24?text=D" alt="Discord">
+                </button>
+                <button onclick="copyToClipboard('bc1q7urjtd2naxmajcvylmmz5clqyc3mfmvauw9kmt', 'Bitcoin')" class="social-button">
+                    <img src="https://via.placeholder.com/24?text=B" alt="Bitcoin">
+                </button>
+                <button onclick="copyToClipboard('Lb5718yTJaK1wPkMd33USucPyN13kMtrGY', 'Litecoin')" class="social-button">
+                    <img src="https://via.placeholder.com/24?text=L" alt="Litecoin">
+                </button>
+                <button onclick="copyToClipboard('0xdaB1b433BD3AeB1ADbAA5724B9cC05EAf047be46', 'Ethereum')" class="social-button">
+                    <img src="https://via.placeholder.com/24?text=E" alt="Ethereum">
+                </button>
+                <button onclick="copyToClipboard('9QNvBo7uwd3AfwxM7Dfc3Ufm4ML6TG2gtHH7GSnNjnih', 'Solana')" class="social-button">
+                    <img src="https://via.placeholder.com/24?text=S" alt="Solana">
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
+
+    <script>
+        // Typewriter Effect
+        const bioElement = document.getElementById('profile-bio');
+        const phrases = ['locked in', 'I love gambling'];
+        let currentPhrase = 0;
+        let isDeleting = false;
+        let text = '';
+        let i = 0;
+
+        function type() {
+            const fullText = phrases[currentPhrase];
+            if (isDeleting) {
+                text = fullText.substring(0, i--);
+            } else {
+                text = fullText.substring(0, i++);
+            }
+
+            bioElement.textContent = text;
+
+            if (!isDeleting && i > fullText.length) {
+                isDeleting = true;
+                setTimeout(type, 1000);
+            } else if (isDeleting && i < 0) {
+                isDeleting = false;
+                currentPhrase = (currentPhrase + 1) % phrases.length;
+                setTimeout(type, 500);
+            } else {
+                const speed = isDeleting ? 50 : 100;
+                setTimeout(type, speed);
+            }
+        }
+
+        type();
+
+        // Panoramic Profile Picture Movement
+        const profilePic = document.querySelector('.profile-picture');
+        document.addEventListener('mousemove', (e) => {
+            const rect = profilePic.getBoundingClientRect();
+            const x = e.clientX - rect.left - rect.width / 2;
+            const maxMove = 50;
+            const moveX = (x / rect.width) * maxMove;
+            profilePic.style.objectPosition = `${moveX}px 50%`;
+        });
+
+        // Profile Block Tilt Effect
+        const profileBlock = document.getElementById('profile-block');
+        profileBlock.addEventListener('mousemove', (e) => {
+            const rect = profileBlock.getBoundingClientRect();
+            const x = e.clientX - rect.left - rect.width / 2;
+            const y = e.clientY - rect.top - rect.height / 2;
+            const tiltX = (y / rect.height) * 20; // Max 20 degrees tilt
+            const tiltY = -(x / rect.width) * 20; // Max 20 degrees tilt
+            profileBlock.style.transform = `translate(-50%, -50%) perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
+        });
+
+        profileBlock.addEventListener('mouseleave', () => {
+            profileBlock.style.transform = `translate(-50%, -50%) perspective(1000px)`; // Reset tilt
+        });
+
+        // Custom Cursor
+        const cursor = document.querySelector('.custom-cursor');
+        const trailDots = [];
+        const maxDots = 10;
+
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+
+            const dot = document.createElement('div');
+            dot.className = 'cursor-trail-dot';
+            dot.style.left = e.clientX + 'px';
+            dot.style.top = e.clientY + 'px';
+            document.body.appendChild(dot);
+            trailDots.push(dot);
+
+            if (trailDots.length > maxDots) {
+                const oldDot = trailDots.shift();
+                oldDot.style.opacity = '0';
+                setTimeout(() => oldDot.remove(), 300);
+            }
+        });
+
+        // Copy to Clipboard with Notification
+        function copyToClipboard(value, type) {
+            navigator.clipboard.writeText(value).then(() => {
+                const notification = document.getElementById('notification');
+                notification.textContent = `Copied ${type} ${type === 'Discord' ? 'link' : 'address'}`;
+                notification.classList.add('show');
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 3000); // Hide after 3 seconds
+            });
+        }
+    </script>
+</body>
+</html>
