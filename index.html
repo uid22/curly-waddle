@@ -382,7 +382,7 @@
                     <img src="bitcoin (1).png" alt="Bitcoin">
                 </button>
                 <button onclick="copyToClipboard('Lb5718yTJaK1wPkMd33USucPyN13kMtrGY', 'Litecoin')" class="social-button">
-                    <img src="bitcoin (1).png" alt="Litecoin">
+                    <img src="litecoin.png" alt="Litecoin">
                 </button>
                 <button onclick="copyToClipboard('0xdaB1b433BD3AeB1ADbAA5724B9cC05EAf047be46', 'Ethereum')" class="social-button">
                     <img src="ethereum (3).png" alt="Ethereum">
@@ -457,18 +457,6 @@
         }
 
         type();
-
-        // Panoramic Profile Picture Movement
-        const profilePic = document.querySelector('.profile-picture');
-        document.addEventListener('mousemove', (e) => {
-            if (profileBlock.classList.contains('visible')) {
-                const rect = profilePic.getBoundingClientRect();
-                const x = e.clientX - rect.left - rect.width / 2;
-                const maxMove = 50;
-                const moveX = (x / rect.width) * maxMove;
-                profilePic.style.objectPosition = `${moveX}px 50%`;
-            }
-        });
 
         // Profile Block Tilt Effect
         profileBlock.addEventListener('mousemove', (e) => {
