@@ -12,6 +12,39 @@
             font-family: 'Courier New', monospace;
         }
 
+        /* Black Screen with Click to Enter */
+        #intro-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 1;
+            transition: opacity 1s ease;
+            pointer-events: auto;
+        }
+
+        #intro-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #intro-text {
+            color: #fff;
+            font-size: 48px;
+            font-weight: bold;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.7));
+            cursor: pointer;
+            text-align: center;
+        }
+
         /* Custom Cursor */
         .custom-cursor {
             position: fixed;
@@ -69,6 +102,12 @@
             backdrop-filter: blur(10px);
             transition: transform 0.2s ease-out;
             pointer-events: auto;
+            opacity: 0; /* Initially hidden */
+            transition: opacity 1s ease, transform 0.2s ease-out;
+        }
+
+        #profile-block.visible {
+            opacity: 1;
         }
 
         #profile-block:hover {
@@ -227,6 +266,11 @@
 
         /* Responsive Design */
         @media (max-width: 430px) {
+            #intro-text {
+                font-size: 32px;
+                padding: 0 20px;
+            }
+
             #profile-block {
                 width: 90vw;
                 max-width: 350px;
@@ -289,6 +333,11 @@
     </style>
 </head>
 <body>
+    <!-- Intro Screen -->
+    <div id="intro-screen">
+        <div id="intro-text">Click to Enter</div>
+    </div>
+
     <!-- Custom Cursor -->
     <div class="custom-cursor"></div>
 
@@ -341,6 +390,42 @@
     <div id="notification" class="notification"></div>
 
     <script>
+        // Handle Intro Screen and Audio
+        const introScreen = document.getElementById('intro-screen');
+        const profileBlock = document.getElementById('profile-block');
+        const audio = document.getElementById('background-audio');
+        const notification = document.getElementById('notification');
+
+        introScreen.addEventListener('click', () => {
+            introScreen.classList.add('hidden');
+            profileBlock.classList.add('visible');
+            audio.muted = false;
+            audio.play().catch(() => {
+                notification.textContent = 'Click again to enable audio';
+                notification.classList.add('show');
+                setTimeout(() => {
+                    if (notification.textContent === 'Click again to enable audio') {
+                        notification.classList.remove('show');
+                    }
+                }, 3000);
+            });
+            // Retry audio on subsequent clicks if needed
+            document.body.addEventListener('click', () => {
+                if (audio.muted || audio.paused) {
+                    audio.muted = false;
+                    audio.play().catch(() => {
+                        notification.textContent = 'Click again to enable audio';
+                        notification.classList.add('show');
+                        setTimeout(() => {
+                            if (notification.textContent === 'Click again to enable audio') {
+                                notification.classList.remove('show');
+                            }
+                        }, 3000);
+                    });
+                }
+            });
+        });
+
         // Typewriter Effect
         const bioElement = document.getElementById('profile-bio');
         const phrases = ['locked in', 'I love gambling'];
@@ -377,26 +462,32 @@
         // Panoramic Profile Picture Movement
         const profilePic = document.querySelector('.profile-picture');
         document.addEventListener('mousemove', (e) => {
-            const rect = profilePic.getBoundingClientRect();
-            const x = e.clientX - rect.left - rect.width / 2;
-            const maxMove = 50;
-            const moveX = (x / rect.width) * maxMove;
-            profilePic.style.objectPosition = `${moveX}px 50%`;
+            if (profileBlock.classList.contains('visible')) {
+                const rect = profilePic.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const maxMove = 50;
+                const moveX = (x / rect.width) * maxMove;
+                profilePic.style.objectPosition = `${moveX}px 50%`;
+            }
         });
 
         // Profile Block Tilt Effect
         const profileBlock = document.getElementById('profile-block');
         profileBlock.addEventListener('mousemove', (e) => {
-            const rect = profileBlock.getBoundingClientRect();
-            const x = e.clientX - rect.left - rect.width / 2;
-            const y = e.clientY - rect.top - rect.height / 2;
-            const tiltX = (y / rect.height) * 20; // Max 20 degrees tilt
-            const tiltY = -(x / rect.width) * 20; // Max 20 degrees tilt
-            profileBlock.style.transform = `translate(-50%, -50%) perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
+            if (profileBlock.classList.contains('visible')) {
+                const rect = profileBlock.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+                const tiltX = (y / rect.height) * 20; // Max 20 degrees tilt
+                const tiltY = -(x / rect.width) * 20; // Max 20 degrees tilt
+                profileBlock.style.transform = `translate(-50%, -50%) perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
+            }
         });
 
         profileBlock.addEventListener('mouseleave', () => {
-            profileBlock.style.transform = `translate(-50%, -50%) perspective(1000px)`; // Reset tilt
+            if (profileBlock.classList.contains('visible')) {
+                profileBlock.style.transform = `translate(-50%, -50%) perspective(1000px)`;
+            }
         });
 
         // Custom Cursor
@@ -425,45 +516,13 @@
         // Copy to Clipboard with Notification
         function copyToClipboard(value, type) {
             navigator.clipboard.writeText(value).then(() => {
-                const notification = document.getElementById('notification');
                 notification.textContent = `Copied ${type} ${type === 'Discord' ? 'link' : 'address'}`;
                 notification.classList.add('show');
                 setTimeout(() => {
                     notification.classList.remove('show');
-                }, 3000); // Hide after 3 seconds
+                }, 3000);
             });
         }
-
-        // Play Audio on Click
-        const audio = document.getElementById('background-audio');
-        const notification = document.getElementById('notification');
-
-        // Show initial notification to prompt click
-        window.addEventListener('load', () => {
-            notification.textContent = 'Click to play music';
-            notification.classList.add('show');
-            setTimeout(() => {
-                if (notification.textContent === 'Click to play music') {
-                    notification.classList.remove('show');
-                }
-            }, 5000); // Hide after 5 seconds
-        });
-
-        // Handle click to play audio
-        document.body.addEventListener('click', () => {
-            if (audio.muted || audio.paused) {
-                audio.muted = false;
-                audio.play().catch(() => {
-                    notification.textContent = 'Click again to enable audio';
-                    notification.classList.add('show');
-                    setTimeout(() => {
-                        if (notification.textContent === 'Click again to enable audio') {
-                            notification.classList.remove('show');
-                        }
-                    }, 3000);
-                });
-            }
-        });
     </script>
 </body>
 </html>
