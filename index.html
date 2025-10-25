@@ -299,7 +299,7 @@
     </video>
 
     <!-- Background Audio -->
-    <audio id="background-audio" autoplay loop muted>
+    <audio id="background-audio" loop muted preload="auto">
         <source src="Audio.mp3" type="audio/mpeg">
         Your browser does not support the audio element.
     </audio>
@@ -434,20 +434,36 @@
             });
         }
 
-        // Play Audio on First Click
+        // Play Audio on Click
         const audio = document.getElementById('background-audio');
+        const notification = document.getElementById('notification');
+
+        // Show initial notification to prompt click
+        window.addEventListener('load', () => {
+            notification.textContent = 'Click to play music';
+            notification.classList.add('show');
+            setTimeout(() => {
+                if (notification.textContent === 'Click to play music') {
+                    notification.classList.remove('show');
+                }
+            }, 5000); // Hide after 5 seconds
+        });
+
+        // Handle click to play audio
         document.body.addEventListener('click', () => {
-            if (audio.muted) {
+            if (audio.muted || audio.paused) {
                 audio.muted = false;
                 audio.play().catch(() => {
-                    // Handle autoplay block
-                    const notification = document.getElementById('notification');
                     notification.textContent = 'Click again to enable audio';
                     notification.classList.add('show');
-                    setTimeout(() => notification.classList.remove('show'), 3000);
+                    setTimeout(() => {
+                        if (notification.textContent === 'Click again to enable audio') {
+                            notification.classList.remove('show');
+                        }
+                    }, 3000);
                 });
             }
-        }, { once: true }); // Trigger only once
+        });
     </script>
 </body>
 </html>
