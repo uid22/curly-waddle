@@ -183,36 +183,6 @@
             border-color: rgba(255, 255, 255, 0.5);
         }
 
-        /* Mute Button */
-        #mute-button {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.7));
-            cursor: pointer;
-            z-index: 30;
-        }
-
-        #mute-button img {
-            width: 24px;
-            height: 24px;
-        }
-
-        #mute-button:hover {
-            transform: scale(1.4) rotateY(15deg);
-            background: rgba(255, 255, 255, 0.2);
-            border-color: rgba(255, 255, 255, 0.5);
-        }
-
         /* Notification */
         .notification {
             position: fixed;
@@ -309,18 +279,6 @@
                 height: 20px;
             }
 
-            #mute-button {
-                width: 32px;
-                height: 32px;
-                top: 10px;
-                right: 10px;
-            }
-
-            #mute-button img {
-                width: 20px;
-                height: 20px;
-            }
-
             .notification {
                 font-size: 12px;
                 padding: 8px 16px;
@@ -345,11 +303,6 @@
         <source src="Audio.mp3" type="audio/mpeg">
         Your browser does not support the audio element.
     </audio>
-
-    <!-- Mute/Unmute Button -->
-    <button id="mute-button" onclick="toggleMute()">
-        <img src="images/mute.png" alt="Mute/Unmute" id="mute-icon">
-    </button>
 
     <!-- Profile Block -->
     <div id="profile-block">
@@ -481,27 +434,20 @@
             });
         }
 
-        // Mute/Unmute Audio
+        // Play Audio on First Click
         const audio = document.getElementById('background-audio');
-        const muteButton = document.getElementById('mute-button');
-        const muteIcon = document.getElementById('mute-icon');
-
-        function toggleMute() {
+        document.body.addEventListener('click', () => {
             if (audio.muted) {
                 audio.muted = false;
-                muteIcon.src = 'images/unmute.png'; // Switch to unmute icon
                 audio.play().catch(() => {
                     // Handle autoplay block
                     const notification = document.getElementById('notification');
-                    notification.textContent = 'Click to enable audio';
+                    notification.textContent = 'Click again to enable audio';
                     notification.classList.add('show');
                     setTimeout(() => notification.classList.remove('show'), 3000);
                 });
-            } else {
-                audio.muted = true;
-                muteIcon.src = 'images/mute.png'; // Switch to mute icon
             }
-        }
+        }, { once: true }); // Trigger only once
     </script>
 </body>
 </html>
