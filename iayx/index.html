@@ -217,36 +217,21 @@
             transition: all 0.3s ease;
             cursor: pointer;
         }
-        .developer-badge {
-    background: #1E90FF;     /* blue owner badge */
-    color: white;
-    width: 2rem;
-    height: 2rem;
-    border-radius: 50%;
-    font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    cursor: pointer;
-}
-.developer-badge::before {
-    content: "♕";
-    font-size: 1.4rem;       /* slightly bigger for perfect visual weight */
-    line-height: 1;
-    transform: translateY(-0.05em);  /* nudges it perfectly center */
-}
-.developer-badge:hover {
-    border-radius: 0.5rem;
-    width: auto;
-    padding: 0.25rem 0.75rem;
-}
-.developer-badge:hover::before {
-    content: "owner";
-    font-size: 0.75rem;
-    font-weight: 600;
-    transform: none;         /* removes the nudge when text appears */
-}
+        .developer-badge::before {
+            content: "D";
+            font-size: 1rem;
+            font-weight: 700;
+        }
+        .developer-badge:hover {
+            border-radius: 0.5rem;
+            width: auto;
+            padding: 0.25rem 0.75rem;
+        }
+        .developer-badge:hover::before {
+            content: "developer";
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
         .premium-badge {
             background: var(--premium-color);
             color: white;
