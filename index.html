@@ -1,627 +1,109 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iayx Profile</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary-color: #fff;
-            --secondary-color: rgba(255, 255, 255, 0.9);
-            --accent-color: #5865F2; /* Discord-inspired blue for accents */
-            --orange-color: #FF9500;
-            --premium-color: #C71585; /* Purplish pink */
-            --background-color: #000;
-            --glass-bg-start: rgba(0, 0, 0, 0.8);
-            --glass-bg-end: rgba(20, 20, 20, 0.8);
-            --border-color: rgba(255, 255, 255, 0.1);
-            --shadow-color: rgba(0, 0, 0, 0.1);
-            --glow-color: rgba(255, 255, 255, 0.5);
-            --font-size-large: 3rem;
-            --font-size-medium: 2rem;
-            --font-size-small: 1rem;
-            --spacing-large: 2rem;
-            --spacing-medium: 1.25rem;
-            --spacing-small: 0.75rem;
-            --transition-fast: 0.3s ease;
-            --transition-slow: 1s ease-in-out;
-        }
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
-        }
-        /* Black Screen with Click to Enter */
-        #intro-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--background-color);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            opacity: 1;
-            transition: opacity var(--transition-slow);
-            pointer-events: auto;
-        }
-        #intro-screen.hidden {
-            opacity: 0;
-            pointer-events: none;
-            display: none;
-        }
-        #intro-text {
-            color: var(--primary-color);
-            font-size: var(--font-size-large);
-            font-weight: 700;
-            letter-spacing: 0.125rem;
-            text-transform: uppercase;
-            filter: drop-shadow(0 0 0.625rem var(--glow-color));
-            cursor: pointer;
-            text-align: center;
-            transition: transform var(--transition-fast);
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-        #intro-text:hover {
-            transform: scale(1.05);
-        }
-        /* Custom Cursor */
-        .custom-cursor {
-            position: fixed;
-            width: 2.5rem;
-            height: 2.5rem;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 10%, transparent 20%);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 9999;
-            transform: translate(-50%, -50%);
-            transition: transform 0.1s ease, opacity var(--transition-fast);
-        }
-        body:not(.touch-device) {
-            cursor: none;
-        }
-        body {
-            background-color: var(--background-color);
-            color: var(--primary-color);
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-        /* Background Video */
-        #background-video {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            z-index: 1;
-            opacity: 0;
-            transition: opacity var(--transition-slow);
-            filter: brightness(0.8); /* Slightly dim for modern overlay feel */
-        }
-        #background-video.visible {
-            opacity: 0.5;
-        }
-        /* Profile Block */
-        #profile-block {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) perspective(1000px);
-            width: 51.25rem; /* 820px */
-            min-height: 20.75rem; /* 332px */
-            background: linear-gradient(135deg, var(--glass-bg-start), var(--glass-bg-end));
-            border: 1px solid var(--border-color);
-            padding: var(--spacing-large);
-            border-radius: 1.25rem;
-            z-index: 20;
-            display: flex;
-            flex-direction: column;
-            gap: var(--spacing-medium);
-            backdrop-filter: blur(0.9375rem);
-            transition: opacity var(--transition-slow), transform var(--transition-fast);
-            pointer-events: auto;
-            opacity: 0;
-            visibility: hidden;
-            box-shadow: 0 0.25rem 1.875rem var(--shadow-color);
-        }
-        #profile-block.visible {
-            opacity: 1;
-            visibility: visible;
-        }
-        #profile-block:hover {
-            box-shadow: 0 0 1.875rem rgba(255, 255, 255, 0.3);
-        }
-        .profile-header {
-            display: flex;
-            align-items: flex-start;
-            gap: var(--spacing-medium);
-        }
-        .profile-container {
-            position: relative;
-            width: 9.375rem; /* 150px */
-            height: 9.375rem;
-            overflow: hidden;
-            border-radius: 50%;
-        }
-        .profile-picture {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            cursor: pointer;
-            transition: transform var(--transition-fast), filter var(--transition-fast);
-        }
-        .profile-picture:hover {
-            transform: scale(1.05);
-            filter: brightness(1.1);
-        }
-        .profile-info {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-        .name-with-badge {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        #profile-name {
-            font-size: var(--font-size-medium);
-            font-weight: 700;
-            letter-spacing: 0.0625rem;
-            color: var(--primary-color);
-            filter: drop-shadow(0 0 0.5rem var(--glow-color));
-            text-shadow: 0 0 0.3125rem rgba(255, 255, 255, 0.4), 0 0 0.625rem rgba(255, 255, 255, 0.2);
-            position: relative;
-            cursor: pointer;
-        }
-        #profile-name:hover::after {
-            content: "ID 1";
-            position: absolute;
-            top: -2rem;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.25rem;
-            font-size: 0.875rem;
-            font-weight: 600;
-            white-space: nowrap;
-            z-index: 10;
-            opacity: 1;
-            transition: opacity 0.3s ease;
-        }
-        .developer-badge {
-            background: var(--orange-color);
-            color: white;
-            width: 2rem;
-            height: 2rem;
-            border-radius: 50%;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-        .developer-badge::before {
-            content: "D";
-            font-size: 1rem;
-            font-weight: 700;
-        }
-        .developer-badge:hover {
-            border-radius: 0.5rem;
-            width: auto;
-            padding: 0.25rem 0.75rem;
-        }
-        .developer-badge:hover::before {
-            content: "developer";
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-        .premium-badge {
-            background: var(--premium-color);
-            color: white;
-            width: 2rem;
-            height: 2rem;
-            border-radius: 50%;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-        .premium-badge::before {
-            content: "★";
-            font-size: 1rem;
-            font-weight: 700;
-        }
-        .premium-badge:hover {
-            border-radius: 0.5rem;
-            width: auto;
-            padding: 0.25rem 0.75rem;
-        }
-        .premium-badge:hover::before {
-            content: "premium";
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-        #profile-bio {
-            color: var(--secondary-color);
-            font-size: 1.125rem;
-            line-height: 1.6;
-            margin: var(--spacing-small) 0;
-            white-space: nowrap;
-            overflow: hidden;
-            border-right: 2px solid var(--primary-color);
-            width: fit-content;
-        }
-        .bio-separator {
-            width: 100%;
-            height: 1px;
-            background: rgba(255, 255, 255, 0.15);
-            margin: var(--spacing-medium) 0;
-        }
-        .profile-footer {
-            display: flex;
-            flex-direction: column;
-            gap: var(--spacing-small);
-            width: 100%;
-            margin-top: auto;
-        }
-        .social-links {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            pointer-events: auto;
-        }
-        .social-button {
-            width: 2.5rem;
-            height: 2.5rem;
-            border-radius: 50%;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
-            border: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all var(--transition-fast);
-            filter: drop-shadow(0 0 0.5rem var(--glow-color));
-            cursor: pointer;
-            pointer-events: auto;
-        }
-        .social-button img {
-            width: 1.5rem;
-            height: 1.5rem;
-            transition: transform var(--transition-fast);
-        }
-        .social-button:hover {
-            transform: scale(1.1);
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
-            border-color: rgba(255, 255, 255, 0.3);
-        }
-        .social-button:hover img {
-            transform: rotate(10deg);
-        }
-        /* Notification */
-        .notification {
-            position: fixed;
-            bottom: 1.25rem;
-            right: 1.25rem;
-            background: rgba(0, 0, 0, 0.8);
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.75rem;
-            border: 1px solid var(--border-color);
-            color: var(--primary-color);
-            font-size: var(--font-size-small);
-            z-index: 30;
-            backdrop-filter: blur(0.625rem);
-            opacity: 0;
-            transform: translateY(1.25rem);
-            transition: opacity var(--transition-fast), transform var(--transition-fast);
-        }
-        .notification.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        /* Cursor Trail */
-        .cursor-trail-dot {
-            position: fixed;
-            width: 0.375rem;
-            height: 0.375rem;
-            background-color: rgba(255, 255, 255, 0.6);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 9998;
-            transform: translate(-50%, -50%);
-            transition: opacity var(--transition-fast);
-        }
-        /* Responsive Design */
-        @media (max-width: 430px) {
-            #intro-text {
-                font-size: 2rem;
-                padding: 0 1.25rem;
-            }
-            #profile-block {
-                width: 90vw;
-                max-width: 21.875rem; /* 350px */
-                min-height: 17.5rem; /* 280px */
-                padding: 1.25rem;
-            }
-            .profile-header {
-                flex-direction: column;
-                align-items: center;
-                gap: 0.9375rem;
-            }
-            .profile-container {
-                width: 7.5rem; /* 120px */
-                height: 7.5rem;
-            }
-            .profile-picture {
-                width: 7.5rem;
-                height: 7.5rem;
-            }
-            .profile-info {
-                align-items: center;
-                text-align: center;
-            }
-            #profile-name {
-                font-size: 1.5rem;
-                letter-spacing: 0.0625rem;
-            }
-            #profile-name:hover::after {
-                top: -1.5rem;
-                font-size: 0.75rem;
-            }
-            .developer-badge {
-                width: 1.5rem;
-                height: 1.5rem;
-            }
-            .developer-badge::before {
-                font-size: 0.875rem;
-            }
-            .developer-badge:hover {
-                padding: 0.1875rem 0.5625rem;
-            }
-            .developer-badge:hover::before {
-                font-size: 0.6875rem;
-            }
-            .premium-badge {
-                width: 1.5rem;
-                height: 1.5rem;
-            }
-            .premium-badge::before {
-                font-size: 0.875rem;
-            }
-            .premium-badge:hover {
-                padding: 0.1875rem 0.5625rem;
-            }
-            .premium-badge:hover::before {
-                font-size: 0.6875rem;
-            }
-            #profile-bio {
-                font-size: 0.875rem;
-                line-height: 1.5;
-            }
-            .social-links {
-                gap: 0.75rem;
-            }
-            .social-button {
-                width: 2.25rem;
-                height: 2.25rem;
-            }
-            .social-button img {
-                width: 1.25rem;
-                height: 1.25rem;
-            }
-            .notification {
-                font-size: 0.75rem;
-                padding: 0.625rem 1.25rem;
-                bottom: 0.9375rem;
-                right: 0.9375rem;
-            }
-        }
-        /* Additional Breakpoint for Tablets */
-        @media (max-width: 768px) and (min-width: 431px) {
-            #profile-block {
-                width: 80vw;
-                padding: 1.5rem;
-            }
-            #profile-name {
-                font-size: 1.75rem;
-            }
-            #profile-bio {
-                font-size: 1rem;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coming Soon</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #000;
+      overflow: hidden;
+      font-family: 'Arial Black', Arial, sans-serif;
+    }
+
+    .tape-container {
+      position: relative;
+      width: 100%;
+      max-width: 900px;
+      padding: 0 40px;
+    }
+
+    .tape {
+      position: relative;
+      background: repeating-linear-gradient(
+        45deg,
+        #ffeb3b,
+        #ffeb3b 40px,
+        #000 40px,
+        #000 80px
+      );
+      height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+      transform: rotate(-6deg);
+      animation: float 6s ease-in-out infinite;
+    }
+
+    .tape::before,
+    .tape::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 100px;
+      background: inherit;
+    }
+
+    .tape::before { left: -90px; transform: skewX(-20deg); }
+    .tape::after  { right: -90px; transform: skewX(20deg); }
+
+    .text {
+      color: #ffffff;                /* Pure white text */
+      font-size: 70px;
+      font-weight: 900;
+      letter-spacing: 16px;
+      text-transform: uppercase;
+      white-space: nowrap;
+
+      /* Strong black stroke so it's readable on yellow AND black stripes */
+      -webkit-text-stroke: 7px #000000;
+      text-stroke: 7px #000000;
+      
+      text-shadow: 
+        0 0 30px #000,
+        5px 5px 0 #000,
+        -5px -5px 0 #000;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: rotate(-6deg) translateY(0); }
+      50% { transform: rotate(-6deg) translateY(-20px); }
+    }
+
+    .extra-tape {
+      position: absolute;
+      width: 120%;
+      height: 100px;
+      background: repeating-linear-gradient(
+        135deg,
+        #ffeb3b,
+        #ffeb3b 40px,
+        #000 40px,
+        #000 80px
+      );
+      top: 50%;
+      left: -10%;
+      transform: translateY(-50%) rotate(8deg);
+      opacity: 0.7;
+      z-index: -1;
+    }
+  </style>
 </head>
 <body>
-    <!-- Intro Screen -->
-    <div id="intro-screen">
-        <div id="intro-text">Click to Enter</div>
+
+  <div class="tape-container">
+    <div class="extra-tape"></div>
+    <div class="tape">
+      <div class="text">Coming Soon</div>
     </div>
-    <!-- Custom Cursor -->
-    <div class="custom-cursor"></div>
-    <!-- Background Video -->
-    <video id="background-video" autoplay loop muted playsinline>
-        <source src="background.mp4" type="video/mp4">
-        Your browser does not support the video tag.
-    </video>
-    <!-- Background Audio -->
-    <audio id="background-audio" loop muted preload="auto">
-        <source src="Audio.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
-    <!-- Profile Block -->
-    <div id="profile-block">
-        <div class="profile-header">
-            <div class="profile-container">
-                <img src="ProfilePicture.jpg" alt="Profile" class="profile-picture">
-            </div>
-            <div class="profile-info">
-                <div class="name-with-badge">
-                    <div id="profile-name">Iayx</div>
-                    <span class="developer-badge"></span>
-                    <span class="premium-badge"></span>
-                </div>
-                <div id="profile-bio"></div>
-            </div>
-        </div>
-        <div class="bio-separator"></div>
-        <div class="profile-footer">
-            <div class="social-links">
-                <button onclick="copyToClipboard('bc1q7urjtd2naxmajcvylmmz5clqyc3mfmvauw9kmt', 'Bitcoin')" class="social-button">
-                    <img src="bitcoin (1).png" alt="Bitcoin">
-                </button>
-                <button onclick="copyToClipboard('Lb5718yTJaK1wPkMd33USucPyN13kMtrGY', 'Litecoin')" class="social-button">
-                    <img src="litecoin (1).png" alt="Litecoin">
-                </button>
-                <button onclick="copyToClipboard('0xdaB1b433BD3AeB1ADbAA5724B9cC05EAf047be46', 'Ethereum')" class="social-button">
-                    <img src="ethereum (3).png" alt="Ethereum">
-                </button>
-                <button onclick="copyToClipboard('9QNvBo7uwd3AfwxM7Dfc3Ufm4ML6TG2gtHH7GSnNjnih', 'Solana')" class="social-button">
-                    <img src="solana.png" alt="Solana">
-                </button>
-            </div>
-        </div>
-    </div>
-    <!-- Notification -->
-    <div id="notification" class="notification"></div>
-    <script>
-        // Handle Intro Screen and Audio
-        const introScreen = document.getElementById('intro-screen');
-        const profileBlock = document.getElementById('profile-block');
-        const backgroundVideo = document.getElementById('background-video');
-        const audio = document.getElementById('background-audio');
-        const notification = document.getElementById('notification');
-        document.addEventListener('click', () => {
-            console.log('Click detected, hiding intro screen and starting audio');
-            introScreen.classList.add('hidden');
-            profileBlock.classList.add('visible');
-            backgroundVideo.classList.add('visible');
-            audio.muted = false;
-            audio.play().then(() => {
-                console.log('Audio playback started successfully');
-            }).catch((error) => {
-                console.error('Audio playback failed:', error);
-                notification.textContent = 'Click again to enable audio';
-                notification.classList.add('show');
-                setTimeout(() => {
-                    if (notification.textContent === 'Click again to enable audio') {
-                        notification.classList.remove('show');
-                    }
-                }, 3000);
-            });
-        }, { once: true });
-        // Typewriter Effect with smoother timing
-        const bioElement = document.getElementById('profile-bio');
-        const phrases = ['locked in', 'I love gambling', 'passion project'];
-        let currentPhrase = 0;
-        let isDeleting = false;
-        let text = '';
-        let i = 0;
-        function type() {
-            const fullText = phrases[currentPhrase];
-            if (isDeleting) {
-                text = fullText.substring(0, i--);
-            } else {
-                text = fullText.substring(0, i++);
-            }
-            bioElement.textContent = text;
-            if (!isDeleting && i > fullText.length) {
-                isDeleting = true;
-                setTimeout(type, 1500); // Longer pause at full text
-            } else if (isDeleting && i < 0) {
-                isDeleting = false;
-                currentPhrase = (currentPhrase + 1) % phrases.length;
-                setTimeout(type, 500);
-            } else {
-                const speed = isDeleting ? 40 : 80; // Slightly faster for modern feel
-                setTimeout(type, speed);
-            }
-        }
-        type();
-        // Profile Block Tilt Effect
-        profileBlock.addEventListener('mousemove', (e) => {
-            if (profileBlock.classList.contains('visible')) {
-                const rect = profileBlock.getBoundingClientRect();
-                const x = e.clientX - rect.left - rect.width / 2;
-                const y = e.clientY - rect.top - rect.height / 2;
-                const tiltX = (y / rect.height) * 15;
-                const tiltY = -(x / rect.width) * 15;
-                profileBlock.style.transform = `translate(-50%, -50%) perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
-            }
-        });
-        profileBlock.addEventListener('mouseleave', () => {
-            if (profileBlock.classList.contains('visible')) {
-                profileBlock.style.transform = `translate(-50%, -50%) perspective(1000px)`;
-            }
-        });
-        // Custom Cursor
-        const cursor = document.querySelector('.custom-cursor');
-        const trailDots = [];
-        const maxDots = 10;
-        let idleTimeout;
-        document.addEventListener('mousemove', (e) => {
-            clearTimeout(idleTimeout);
-            cursor.style.opacity = '1';
-            cursor.style.left = e.clientX + 'px';
-            cursor.style.top = e.clientY + 'px';
-            const dot = document.createElement('div');
-            dot.className = 'cursor-trail-dot';
-            dot.style.left = e.clientX + 'px';
-            dot.style.top = e.clientY + 'px';
-            document.body.appendChild(dot);
-            trailDots.push(dot);
-            if (trailDots.length > maxDots) {
-                const oldDot = trailDots.shift();
-                oldDot.style.opacity = '0';
-                setTimeout(() => oldDot.remove(), 300);
-            }
-            idleTimeout = setTimeout(() => {
-                cursor.style.opacity = '0';
-                trailDots.forEach(dot => {
-                    dot.style.opacity = '0';
-                    setTimeout(() => dot.remove(), 300);
-                });
-                trailDots.length = 0;
-            }, 500); // Reduced to 500ms for faster fade away
-        });
-        // Copy to Clipboard with Notification
-        function copyToClipboard(value, type) {
-            navigator.clipboard.writeText(value).then(() => {
-                notification.textContent = `Copied ${type} address`;
-                notification.classList.add('show');
-                setTimeout(() => {
-                    notification.classList.remove('show');
-                }, 3000);
-            }).catch((err) => {
-                console.error('Failed to copy: ', err);
-                notification.textContent = 'Failed to copy address';
-                notification.classList.add('show');
-                setTimeout(() => {
-                    notification.classList.remove('show');
-                }, 3000);
-            });
-        }
-        // Detect touch device to disable custom cursor
-        if ('ontouchstart' in window) {
-            document.body.classList.add('touch-device');
-        }
-    </script>
+  </div>
+
 </body>
 </html>
