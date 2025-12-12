@@ -204,34 +204,34 @@
             opacity: 1;
             transition: opacity 0.3s ease;
         }
-        .developer-badge {
-            background: var(--orange-color);
-            color: white;
-            width: 2rem;
-            height: 2rem;
-            border-radius: 50%;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-        .developer-badge::before {
-            content: "D";
-            font-size: 1rem;
-            font-weight: 700;
-        }
-        .developer-badge:hover {
-            border-radius: 0.5rem;
-            width: auto;
-            padding: 0.25rem 0.75rem;
-        }
-        .developer-badge:hover::before {
-            content: "developer";
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
+       .developer-badge {
+    background: #00ff7f; /* your green */
+    color: white;        /* now white text like premium badge */
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    font-weight: 600;    /* matches premium badge exactly */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+.developer-badge::before {
+    content: "EA";
+    font-size: 1rem;
+    font-weight: 700;    /* bold initials, just like the ★ on premium */
+}
+.developer-badge:hover {
+    border-radius: 0.5rem;
+    width: auto;
+    padding: 0.25rem 0.75rem;
+}
+.developer-badge:hover::before {
+    content: "early access";
+    font-size: 0.75rem;
+    font-weight: 600;    /* matches premium "premium" text */
+}
         .premium-badge {
             background: var(--premium-color);
             color: white;
