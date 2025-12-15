@@ -589,11 +589,11 @@
     <div class="feedback-control">
         <div id="like-btn" class="feedback-btn">
             <img src="Likeicon.jpg" alt="Like">
-            <div id="like-count" class="feedback-count">0</div>
+            <div id="like-count" class="feedback-count">138</div>
         </div>
         <div id="dislike-btn" class="feedback-btn">
             <img src="Dislikeicon.jpg" alt="Dislike">
-            <div id="dislike-count" class="feedback-count">0</div>
+            <div id="dislike-count" class="feedback-count">23</div>
         </div>
     </div>
 
@@ -774,30 +774,37 @@
             audio.volume = vol;
         });
 
-        // Like/Dislike System
+        // Like/Dislike System - Fake starting values
         const likeBtn = document.getElementById('like-btn');
         const dislikeBtn = document.getElementById('dislike-btn');
         const likeCount = document.getElementById('like-count');
         const dislikeCount = document.getElementById('dislike-count');
 
-        let likes = parseInt(localStorage.getItem('likes') || '0');
-        let dislikes = parseInt(localStorage.getItem('dislikes') || '0');
-        let userVote = localStorage.getItem('userVote') || null;
+        let likes = 138;
+        let dislikes = 23;
+        let userVote = null;
 
         likeCount.textContent = likes;
         dislikeCount.textContent = dislikes;
 
-        if (userVote === 'like') likeBtn.classList.add('active-like');
-        if (userVote === 'dislike') dislikeBtn.classList.add('active-dislike');
-
         function updateVote(type) {
             if (userVote === type) {
-                if (type === 'like') { likes--; likeBtn.classList.remove('active-like'); }
-                else { dislikes--; dislikeBtn.classList.remove('active-dislike'); }
+                if (type === 'like') {
+                    likes--;
+                    likeBtn.classList.remove('active-like');
+                } else {
+                    dislikes--;
+                    dislikeBtn.classList.remove('active-dislike');
+                }
                 userVote = null;
             } else {
-                if (userVote === 'like') { likes--; likeBtn.classList.remove('active-like'); }
-                else if (userVote === 'dislike') { dislikes--; dislikeBtn.classList.remove('active-dislike'); }
+                if (userVote === 'like') {
+                    likes--;
+                    likeBtn.classList.remove('active-like');
+                } else if (userVote === 'dislike') {
+                    dislikes--;
+                    dislikeBtn.classList.remove('active-dislike');
+                }
                 if (type === 'like') {
                     likes++;
                     likeBtn.classList.add('active-like');
@@ -812,10 +819,6 @@
 
             likeCount.textContent = likes;
             dislikeCount.textContent = dislikes;
-
-            localStorage.setItem('likes', likes);
-            localStorage.setItem('dislikes', dislikes);
-            localStorage.setItem('userVote', userVote);
         }
 
         likeBtn.addEventListener('click', () => updateVote('like'));
