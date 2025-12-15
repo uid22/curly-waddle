@@ -131,7 +131,7 @@
             flex-direction: column;
             gap: var(--spacing-medium);
             backdrop-filter: blur(0.9375rem);
-            transition: opacity var(--transition-slow), transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), box-shadow var(--transition-fast);
+            transition: opacity var(--transition-slow), box-shadow var(--transition-fast);
             pointer-events: auto;
             opacity: 0;
             visibility: hidden;
@@ -223,7 +223,7 @@
             opacity: 1;
             transition: opacity 0.3s ease;
         }
-        /* Owner Badge (was Developer) */
+        /* Owner Badge */
         .owner-badge {
             background: var(--orange-color);
             color: white;
@@ -234,7 +234,7 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.4s ease; /* Smoother and longer for nice slide back */
+            transition: all 0.4s ease;
             cursor: pointer;
             position: relative;
             overflow: hidden;
@@ -377,7 +377,7 @@
             transition: opacity var(--transition-fast);
         }
 
-        /* Volume Control - Static Icon */
+        /* Volume Control */
         .volume-control {
             position: fixed;
             top: var(--spacing-medium);
@@ -446,7 +446,7 @@
             border: none;
         }
 
-        /* Like/Dislike System - Image Icons */
+        /* Like/Dislike System */
         .feedback-control {
             position: fixed;
             bottom: var(--spacing-medium);
@@ -575,7 +575,7 @@
     <!-- Notification -->
     <div id="notification" class="notification"></div>
 
-    <!-- Volume Control (Static Sound Icon) -->
+    <!-- Volume Control -->
     <div id="volume-control" class="volume-control">
         <button id="volume-btn" class="volume-btn">
             <img src="Soundicon.jpg" alt="Volume">
@@ -585,7 +585,7 @@
         </div>
     </div>
 
-    <!-- Like/Dislike System (Custom Icons) -->
+    <!-- Like/Dislike System -->
     <div class="feedback-control">
         <div id="like-btn" class="feedback-btn">
             <img src="Likeicon.jpg" alt="Like">
@@ -648,23 +648,60 @@
         }
         type();
 
-        // 3D Tilt
+        // === IMPROVED TILT EFFECT WITH SMOOTH INERTIA ===
+        let isHovering = false;
+        let targetTiltX = 0;
+        let targetTiltY = 0;
+        let currentTiltX = 0;
+        let currentTiltY = 0;
+        const smoothing = 0.12; // Adjust for more/less lag (0.08 = very smooth, 0.2 = snappier)
+        const maxTilt = 16; // Max degrees of rotation
+
+        function animateTilt() {
+            currentTiltX += (targetTiltX - currentTiltX) * smoothing;
+            currentTiltY += (targetTiltY - currentTiltY) * smoothing;
+
+            const scale = isHovering ? 1.02 : 1;
+
+            profileBlock.style.transform = 
+                `translate(-50%, -50%) perspective(1200px) ` +
+                `rotateX(${currentTiltX}deg) rotateY(${currentTiltY}deg) scale(${scale})`;
+
+            if (isHovering || Math.abs(currentTiltX) > 0.01 || Math.abs(currentTiltY) > 0.01) {
+                requestAnimationFrame(animateTilt);
+            }
+        }
+
         profileBlock.addEventListener('mousemove', (e) => {
             if (!profileBlock.classList.contains('visible')) return;
+
+            isHovering = true;
+
             const rect = profileBlock.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
-            const rotateY = (x - centerX) / centerX * 20;
-            const rotateX = (centerY - y) / centerY * 20;
-            profileBlock.style.transform = `translate(-50%, -50%) perspective(1200px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-        });
-        profileBlock.addEventListener('mouseleave', () => {
-            if (profileBlock.classList.contains('visible')) {
-                profileBlock.style.transform = `translate(-50%, -50%) perspective(1200px)`;
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+
+            const x = (e.clientX - centerX) / (rect.width / 2);
+            const y = (e.clientY - centerY) / (rect.height / 2);
+
+            const clampedX = Math.max(-1, Math.min(1, x));
+            const clampedY = Math.max(-1, Math.min(1, y));
+
+            targetTiltX = clampedY * maxTilt;
+            targetTiltY = clampedX * -maxTilt;
+
+            if (!window.tiltAnimationRunning) {
+                window.tiltAnimationRunning = true;
+                requestAnimationFrame(animateTilt);
             }
         });
+
+        profileBlock.addEventListener('mouseleave', () => {
+            isHovering = false;
+            targetTiltX = 0;
+            targetTiltY = 0;
+        });
+        // === END OF IMPROVED TILT ===
 
         // Custom Cursor + Trail
         const cursor = document.querySelector('.custom-cursor');
@@ -713,7 +750,7 @@
             });
         }
 
-        // Volume Control (Static Icon)
+        // Volume Control
         const volumeBtn = document.getElementById('volume-btn');
         const volumeSliderContainer = document.getElementById('volume-slider-container');
         const volumeSlider = document.getElementById('volume-slider');
