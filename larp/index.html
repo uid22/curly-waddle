@@ -119,7 +119,7 @@
             position: fixed;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%) perspective(1000px);
+            transform: translate(-50%, -50%) perspective(1200px);
             width: 51.25rem;
             min-height: 20.75rem;
             background: linear-gradient(135deg, var(--glass-bg-start), var(--glass-bg-end));
@@ -131,18 +131,19 @@
             flex-direction: column;
             gap: var(--spacing-medium);
             backdrop-filter: blur(0.9375rem);
-            transition: opacity var(--transition-slow), transform var(--transition-fast);
+            transition: opacity var(--transition-slow), box-shadow var(--transition-fast);
             pointer-events: auto;
             opacity: 0;
             visibility: hidden;
             box-shadow: 0 0.25rem 1.875rem var(--shadow-color);
+            overflow: hidden;
         }
         #profile-block.visible {
             opacity: 1;
             visibility: visible;
         }
         #profile-block:hover {
-            box-shadow: 0 0 1.875rem rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 2.5rem rgba(255, 255, 255, 0.25);
         }
 
         .profile-header {
@@ -351,7 +352,7 @@
             transition: opacity var(--transition-fast);
         }
 
-        /* Volume Control - Static Icon */
+        /* Volume Control */
         .volume-control {
             position: fixed;
             top: var(--spacing-medium);
@@ -420,7 +421,7 @@
             border: none;
         }
 
-        /* Like/Dislike System - Image Icons */
+        /* Like/Dislike System */
         .feedback-control {
             position: fixed;
             bottom: var(--spacing-medium);
@@ -488,51 +489,12 @@
                 width: 7.5rem;
                 height: 7.5rem;
             }
-            .profile-picture {
-                width: 7.5rem;
-                height: 7.5rem;
-            }
             .profile-info {
                 align-items: center;
                 text-align: center;
             }
             #profile-name {
                 font-size: 1.5rem;
-                letter-spacing: 0.0625rem;
-            }
-            #profile-name:hover::after {
-                top: -1.5rem;
-                font-size: 0.75rem;
-            }
-            .developer-badge {
-                width: 1.5rem;
-                height: 1.5rem;
-            }
-            .developer-badge::before {
-                font-size: 0.875rem;
-            }
-            .developer-badge:hover {
-                padding: 0.1875rem 0.5625rem;
-            }
-            .developer-badge:hover::before {
-                font-size: 0.6875rem;
-            }
-            .premium-badge {
-                width: 1.5rem;
-                height: 1.5rem;
-            }
-            .premium-badge::before {
-                font-size: 0.875rem;
-            }
-            .premium-badge:hover {
-                padding: 0.1875rem 0.5625rem;
-            }
-            .premium-badge:hover::before {
-                font-size: 0.6875rem;
-            }
-            #profile-bio {
-                font-size: 0.875rem;
-                line-height: 1.5;
             }
             .social-links {
                 gap: 0.75rem;
@@ -545,20 +507,11 @@
                 width: 1.25rem;
                 height: 1.25rem;
             }
-            .notification {
-                font-size: 0.75rem;
-                padding: 0.625rem 1.25rem;
-                bottom: 0.9375rem;
-                right: 0.9375rem;
-            }
             .feedback-control {
                 bottom: 0.75rem;
                 left: 0.75rem;
                 padding: 0.4rem 0.8rem;
                 gap: 0.75rem;
-            }
-            .feedback-btn {
-                padding: 0.4rem 0.8rem;
             }
             .feedback-btn img {
                 width: 1.25rem;
@@ -625,16 +578,16 @@
         <div class="bio-separator"></div>
         <div class="profile-footer">
             <div class="social-links">
-                <button onclick="copyToClipboard('bc1qv2vp6f4g0yg4v4mpccq3e4k59l3tr7f7p5fy5k', 'Bitcoin')" class="social-button">
+                <button onclick="copyToClipboard('bc1q7urjtd2naxmajcvylmmz5clqyc3mfmvauw9kmt', 'Bitcoin')" class="social-button">
                     <img src="bitcoin (1).png" alt="Bitcoin">
                 </button>
-                <button onclick="copyToClipboard('LcqGuma8EZmDhUhaJmXcMGsGVoc4GHqVFe', 'Litecoin')" class="social-button">
+                <button onclick="copyToClipboard('Lb5718yTJaK1wPkMd33USucPyN13kMtrGY', 'Litecoin')" class="social-button">
                     <img src="litecoin (1).png" alt="Litecoin">
                 </button>
-                <button onclick="copyToClipboard('0xEd83d31Ef3d9BC0b3096f10BC5D074EcBFc81cc7', 'Ethereum')" class="social-button">
+                <button onclick="copyToClipboard('0xdaB1b433BD3AeB1ADbAA5724B9cC05EAf047be46', 'Ethereum')" class="social-button">
                     <img src="ethereum (3).png" alt="Ethereum">
                 </button>
-                <button onclick="copyToClipboard('Avo2LoJzwsNYHYiu9aZeMbUXfNK2MUBHgb5DwvcthTuD', 'Solana')" class="social-button">
+                <button onclick="copyToClipboard('9QNvBo7uwd3AfwxM7Dfc3Ufm4ML6TG2gtHH7GSnNjnih', 'Solana')" class="social-button">
                     <img src="solana.png" alt="Solana">
                 </button>
             </div>
@@ -643,7 +596,7 @@
     <!-- Notification -->
     <div id="notification" class="notification"></div>
 
-    <!-- Volume Control (Static Sound Icon) -->
+    <!-- Volume Control -->
     <div id="volume-control" class="volume-control">
         <button id="volume-btn" class="volume-btn">
             <img src="Soundicon.jpg" alt="Volume">
@@ -653,15 +606,15 @@
         </div>
     </div>
 
-    <!-- Like/Dislike System (Custom Icons) -->
+    <!-- Like/Dislike System -->
     <div class="feedback-control">
         <div id="like-btn" class="feedback-btn">
             <img src="Likeicon.jpg" alt="Like">
-            <div id="like-count" class="feedback-count">0</div>
+            <div id="like-count" class="feedback-count">58</div>
         </div>
         <div id="dislike-btn" class="feedback-btn">
             <img src="Dislikeicon.jpg" alt="Dislike">
-            <div id="dislike-count" class="feedback-count">0</div>
+            <div id="dislike-count" class="feedback-count">12</div>
         </div>
     </div>
 
@@ -689,7 +642,7 @@
 
         // Typewriter Effect
         const bioElement = document.getElementById('profile-bio');
-        const phrases = ['Opsecspottedinphilly on discord', 'Biggest larp', 'Best skid'];
+        const phrases = ['opsecspottedinphilly on discord', 'Biggest larp', 'I love skidding'];
         let currentPhrase = 0;
         let isDeleting = false;
         let text = '';
@@ -716,24 +669,62 @@
         }
         type();
 
-        // Profile Block Tilt Effect
-        profileBlock.addEventListener('mousemove', (e) => {
-            if (profileBlock.classList.contains('visible')) {
-                const rect = profileBlock.getBoundingClientRect();
-                const x = e.clientX - rect.left - rect.width / 2;
-                const y = e.clientY - rect.top - rect.height / 2;
-                const tiltX = (y / rect.height) * 15;
-                const tiltY = -(x / rect.width) * 15;
-                profileBlock.style.transform = `translate(-50%, -50%) perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
+        // === SMOOTH PANORAMIC/TILT EFFECT (same as Iayx profile) ===
+        let isHovering = false;
+        let targetTiltX = 0;
+        let targetTiltY = 0;
+        let currentTiltX = 0;
+        let currentTiltY = 0;
+        const smoothing = 0.12;
+        const maxTilt = 16;
+
+        function animateTilt() {
+            currentTiltX += (targetTiltX - currentTiltX) * smoothing;
+            currentTiltY += (targetTiltY - currentTiltY) * smoothing;
+
+            const scale = isHovering ? 1.02 : 1;
+
+            profileBlock.style.transform = 
+                `translate(-50%, -50%) perspective(1200px) ` +
+                `rotateX(${currentTiltX}deg) rotateY(${currentTiltY}deg) scale(${scale})`;
+
+            if (isHovering || Math.abs(currentTiltX) > 0.01 || Math.abs(currentTiltY) > 0.01) {
+                requestAnimationFrame(animateTilt);
             }
-        });
-        profileBlock.addEventListener('mouseleave', () => {
-            if (profileBlock.classList.contains('visible')) {
-                profileBlock.style.transform = `translate(-50%, -50%) perspective(1000px)`;
+        }
+
+        profileBlock.addEventListener('mousemove', (e) => {
+            if (!profileBlock.classList.contains('visible')) return;
+
+            isHovering = true;
+
+            const rect = profileBlock.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+
+            const x = (e.clientX - centerX) / (rect.width / 2);
+            const y = (e.clientY - centerY) / (rect.height / 2);
+
+            const clampedX = Math.max(-1, Math.min(1, x));
+            const clampedY = Math.max(-1, Math.min(1, y));
+
+            targetTiltX = clampedY * maxTilt;
+            targetTiltY = clampedX * -maxTilt;
+
+            if (!window.tiltAnimationRunning) {
+                window.tiltAnimationRunning = true;
+                requestAnimationFrame(animateTilt);
             }
         });
 
-        // Custom Cursor
+        profileBlock.addEventListener('mouseleave', () => {
+            isHovering = false;
+            targetTiltX = 0;
+            targetTiltY = 0;
+        });
+        // === END OF TILT ===
+
+        // Custom Cursor + Trail
         const cursor = document.querySelector('.custom-cursor');
         const trailDots = [];
         const maxDots = 10;
@@ -780,7 +771,7 @@
             });
         }
 
-        // Volume Control (Static Icon)
+        // Volume Control
         const volumeBtn = document.getElementById('volume-btn');
         const volumeSliderContainer = document.getElementById('volume-slider-container');
         const volumeSlider = document.getElementById('volume-slider');
@@ -804,30 +795,37 @@
             audio.volume = vol;
         });
 
-        // Like/Dislike System
+        // Like/Dislike System - Fake starting values
         const likeBtn = document.getElementById('like-btn');
         const dislikeBtn = document.getElementById('dislike-btn');
         const likeCount = document.getElementById('like-count');
         const dislikeCount = document.getElementById('dislike-count');
 
-        let likes = parseInt(localStorage.getItem('likes_larps') || '0'); // Unique key to avoid conflict with other profiles
-        let dislikes = parseInt(localStorage.getItem('dislikes_larps') || '0');
-        let userVote = localStorage.getItem('userVote_larps') || null;
+        let likes = 58;
+        let dislikes = 12;
+        let userVote = null;
 
         likeCount.textContent = likes;
         dislikeCount.textContent = dislikes;
 
-        if (userVote === 'like') likeBtn.classList.add('active-like');
-        if (userVote === 'dislike') dislikeBtn.classList.add('active-dislike');
-
         function updateVote(type) {
             if (userVote === type) {
-                if (type === 'like') { likes--; likeBtn.classList.remove('active-like'); }
-                else { dislikes--; dislikeBtn.classList.remove('active-dislike'); }
+                if (type === 'like') {
+                    likes--;
+                    likeBtn.classList.remove('active-like');
+                } else {
+                    dislikes--;
+                    dislikeBtn.classList.remove('active-dislike');
+                }
                 userVote = null;
             } else {
-                if (userVote === 'like') { likes--; likeBtn.classList.remove('active-like'); }
-                else if (userVote === 'dislike') { dislikes--; dislikeBtn.classList.remove('active-dislike'); }
+                if (userVote === 'like') {
+                    likes--;
+                    likeBtn.classList.remove('active-like');
+                } else if (userVote === 'dislike') {
+                    dislikes--;
+                    dislikeBtn.classList.remove('active-dislike');
+                }
                 if (type === 'like') {
                     likes++;
                     likeBtn.classList.add('active-like');
@@ -842,10 +840,6 @@
 
             likeCount.textContent = likes;
             dislikeCount.textContent = dislikes;
-
-            localStorage.setItem('likes_larps', likes);
-            localStorage.setItem('dislikes_larps', dislikes);
-            localStorage.setItem('userVote_larps', userVote);
         }
 
         likeBtn.addEventListener('click', () => updateVote('like'));
