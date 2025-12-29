@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Iayx Profile</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500&family=Poppins:wght@400;500&display=swap" rel="stylesheet">
+    <!-- music-metadata-browser CDN for reading MP3 title -->
+    <script type="module" src="https://cdn.jsdelivr.net/npm/music-metadata-browser@2.5.10/dist/index.min.js"></script>
     <style>
         :root {
             --primary-color: #fff;
@@ -162,7 +165,6 @@
         #profile-block:hover {
             box-shadow: 0 0 2.5rem rgba(255, 255, 255, 0.25);
         }
-
         .profile-header {
             display: flex;
             align-items: flex-start;
@@ -376,7 +378,6 @@
             transform: translate(-50%, -50%);
             transition: opacity var(--transition-fast);
         }
-
         /* Volume Control */
         .volume-control {
             position: fixed;
@@ -445,7 +446,6 @@
             box-shadow: 0 0 0.625rem rgba(88, 101, 242, 0.5);
             border: none;
         }
-
         /* Like/Dislike System */
         .feedback-control {
             position: fixed;
@@ -493,7 +493,69 @@
             text-align: center;
         }
 
-        /* Responsive */
+        /* SONG DISPLAYER */
+        .song-container {
+            width: 100%;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .song {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            width: 100%;
+        }
+        .songcover {
+            width: 110px;
+            height: 110px;
+            border-radius: 10px;
+            object-fit: cover;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+        .songinfo {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .songtitle {
+            color: white;
+            font-family: 'Rubik', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin: 4px 0;
+            text-align: left;
+        }
+        .progress-bar-container {
+            width: 80%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin: 1rem 0;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .progress-bar {
+            height: 100%;
+            background-color: #fff;
+            width: 0%;
+            transition: width 0.1s ease;
+            border-radius: 10px;
+        }
+        .time-label {
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
         @media (max-width: 430px) {
             .feedback-control {
                 bottom: 0.75rem;
@@ -518,6 +580,16 @@
             }
             .volume-slider-container.visible {
                 width: 7rem;
+            }
+            .song {
+                flex-direction: column;
+                text-align: center;
+            }
+            .songtitle {
+                text-align: center;
+            }
+            .progress-bar-container {
+                width: 90%;
             }
         }
     </style>
@@ -570,11 +642,24 @@
                     <img src="solana.png" alt="Solana">
                 </button>
             </div>
+
+            <!-- SONG DISPLAYER -->
+            <div class="song-container">
+                <div class="song">
+                    <img src="SongImage.png" alt="Song Cover" class="songcover">
+                    <div class="songinfo">
+                        <div class="songtitle" id="song-title">Unknown Title</div>
+                    </div>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progress-bar"></div>
+                </div>
+                <div class="time-label" id="time-label">0:00 / 0:00</div>
+            </div>
         </div>
     </div>
     <!-- Notification -->
     <div id="notification" class="notification"></div>
-
     <!-- Volume Control -->
     <div id="volume-control" class="volume-control">
         <button id="volume-btn" class="volume-btn">
@@ -584,7 +669,6 @@
             <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="1">
         </div>
     </div>
-
     <!-- Like/Dislike System -->
     <div class="feedback-control">
         <div id="like-btn" class="feedback-btn">
@@ -605,10 +689,16 @@
         const audio = document.getElementById('background-audio');
         const notification = document.getElementById('notification');
 
+        let hasEntered = false;
+
         document.addEventListener('click', () => {
+            if (hasEntered) return;
+            hasEntered = true;
+
             introScreen.classList.add('hidden');
             profileBlock.classList.add('visible');
             backgroundVideo.classList.add('visible');
+
             audio.muted = false;
             audio.volume = 1.0;
             audio.play().catch((error) => {
@@ -617,6 +707,8 @@
                 notification.classList.add('show');
                 setTimeout(() => notification.classList.remove('show'), 3000);
             });
+
+            loadMetadata();
         }, { once: true });
 
         // Typewriter Effect
@@ -648,60 +740,47 @@
         }
         type();
 
-        // === IMPROVED TILT EFFECT WITH SMOOTH INERTIA ===
+        // Tilt Effect
         let isHovering = false;
         let targetTiltX = 0;
         let targetTiltY = 0;
         let currentTiltX = 0;
         let currentTiltY = 0;
-        const smoothing = 0.12; // Adjust for more/less lag (0.08 = very smooth, 0.2 = snappier)
-        const maxTilt = 16; // Max degrees of rotation
-
+        const smoothing = 0.12;
+        const maxTilt = 16;
         function animateTilt() {
             currentTiltX += (targetTiltX - currentTiltX) * smoothing;
             currentTiltY += (targetTiltY - currentTiltY) * smoothing;
-
             const scale = isHovering ? 1.02 : 1;
-
-            profileBlock.style.transform = 
+            profileBlock.style.transform =
                 `translate(-50%, -50%) perspective(1200px) ` +
                 `rotateX(${currentTiltX}deg) rotateY(${currentTiltY}deg) scale(${scale})`;
-
             if (isHovering || Math.abs(currentTiltX) > 0.01 || Math.abs(currentTiltY) > 0.01) {
                 requestAnimationFrame(animateTilt);
             }
         }
-
         profileBlock.addEventListener('mousemove', (e) => {
             if (!profileBlock.classList.contains('visible')) return;
-
             isHovering = true;
-
             const rect = profileBlock.getBoundingClientRect();
             const centerX = rect.left + rect.width / 2;
             const centerY = rect.top + rect.height / 2;
-
             const x = (e.clientX - centerX) / (rect.width / 2);
             const y = (e.clientY - centerY) / (rect.height / 2);
-
             const clampedX = Math.max(-1, Math.min(1, x));
             const clampedY = Math.max(-1, Math.min(1, y));
-
             targetTiltX = clampedY * maxTilt;
             targetTiltY = clampedX * -maxTilt;
-
             if (!window.tiltAnimationRunning) {
                 window.tiltAnimationRunning = true;
                 requestAnimationFrame(animateTilt);
             }
         });
-
         profileBlock.addEventListener('mouseleave', () => {
             isHovering = false;
             targetTiltX = 0;
             targetTiltY = 0;
         });
-        // === END OF IMPROVED TILT ===
 
         // Custom Cursor + Trail
         const cursor = document.querySelector('.custom-cursor');
@@ -713,20 +792,17 @@
             cursor.style.opacity = '1';
             cursor.style.left = e.clientX + 'px';
             cursor.style.top = e.clientY + 'px';
-
             const dot = document.createElement('div');
             dot.className = 'cursor-trail-dot';
             dot.style.left = e.clientX + 'px';
             dot.style.top = e.clientY + 'px';
             document.body.appendChild(dot);
             trailDots.push(dot);
-
             if (trailDots.length > maxDots) {
                 const oldDot = trailDots.shift();
                 oldDot.style.opacity = '0';
                 setTimeout(() => oldDot.remove(), 300);
             }
-
             idleTimeout = setTimeout(() => {
                 cursor.style.opacity = '0';
                 trailDots.forEach(dot => {
@@ -754,39 +830,32 @@
         const volumeBtn = document.getElementById('volume-btn');
         const volumeSliderContainer = document.getElementById('volume-slider-container');
         const volumeSlider = document.getElementById('volume-slider');
-
         audio.volume = 1.0;
         volumeSlider.value = 1.0;
-
         volumeBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             volumeSliderContainer.classList.toggle('visible');
         });
-
         document.addEventListener('click', () => {
             if (volumeSliderContainer.classList.contains('visible')) {
                 volumeSliderContainer.classList.remove('visible');
             }
         });
-
         volumeSlider.addEventListener('input', (e) => {
             const vol = parseFloat(e.target.value);
             audio.volume = vol;
         });
 
-        // Like/Dislike System - Fake starting values
+        // Like/Dislike System
         const likeBtn = document.getElementById('like-btn');
         const dislikeBtn = document.getElementById('dislike-btn');
         const likeCount = document.getElementById('like-count');
         const dislikeCount = document.getElementById('dislike-count');
-
         let likes = 138;
         let dislikes = 23;
         let userVote = null;
-
         likeCount.textContent = likes;
         dislikeCount.textContent = dislikes;
-
         function updateVote(type) {
             if (userVote === type) {
                 if (type === 'like') {
@@ -816,13 +885,49 @@
                 }
                 userVote = type;
             }
-
             likeCount.textContent = likes;
             dislikeCount.textContent = dislikes;
         }
-
         likeBtn.addEventListener('click', () => updateVote('like'));
         dislikeBtn.addEventListener('click', () => updateVote('dislike'));
+
+        // SONG TITLE & PROGRESS SYNC
+        const songTitleEl = document.getElementById('song-title');
+        const progressBar = document.getElementById('progress-bar');
+        const timeLabel = document.getElementById('time-label');
+
+        function formatTime(seconds) {
+            if (isNaN(seconds)) return "0:00";
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        }
+
+        function updateProgress() {
+            if (audio.duration) {
+                const percent = (audio.currentTime / audio.duration) * 100;
+                progressBar.style.width = percent + '%';
+                timeLabel.textContent = `${formatTime(audio.currentTime)} / ${formatTime(audio.duration)}`;
+            }
+        }
+
+        audio.addEventListener('timeupdate', updateProgress);
+        audio.addEventListener('loadedmetadata', updateProgress);
+
+        async function loadMetadata() {
+            try {
+                const { parseBlob } = musicMetadata;
+                const response = await fetch('Audio.mp3');
+                if (!response.ok) throw new Error('Failed to fetch');
+                const blob = await response.blob();
+                const metadata = await parseBlob(blob);
+                const title = metadata.common.title || 'NUK3';
+                songTitleEl.textContent = title;
+            } catch (err) {
+                console.error('Metadata error:', err);
+                songTitleEl.textContent = 'NUK3';
+            }
+        }
 
         // Disable custom cursor on touch devices
         if ('ontouchstart' in window) {
