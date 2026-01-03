@@ -120,7 +120,7 @@
     opacity: 1;  /* 100% ORIGINAL VIDEO BRIGHTNESS */
 }
 
-/* Dark overlay for readability (adjust rgba last value: 0.1=very bright, 0.3=darker) */
+/* Dark overlay for readability */
 #video-overlay {
     position: fixed;
     top: 0;
@@ -137,13 +137,13 @@
     opacity: 1;
 }
 
-        /* SIZED DOWN PROFILE BLOCK */
+        /* PROFILE BLOCK */
         #profile-block {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) perspective(1200px);
-            width: 44rem; /* reduced for less screen usage */
+            width: 44rem;
             min-height: 20.75rem;
             background: linear-gradient(135deg, var(--glass-bg-start), var(--glass-bg-end));
             border: 1px solid var(--border-color);
@@ -193,7 +193,7 @@
         }
         .profile-container {
             position: relative;
-            width: 8.75rem; /* slightly reduced */
+            width: 8.75rem;
             height: 8.75rem;
             overflow: hidden;
             border-radius: 50%;
@@ -230,7 +230,7 @@
             cursor: pointer;
         }
         #profile-name:hover::after {
-            content: "ID 1";
+            content: "ID 3";
             position: absolute;
             top: -2rem;
             left: 50%;
@@ -473,7 +473,7 @@
             width: 100%;
         }
         .songcover {
-            width: 100px; /* reduced slightly for compact feel */
+            width: 100px;
             height: 100px;
             border-radius: 10px;
             object-fit: cover;
@@ -713,11 +713,11 @@
     <div class="feedback-control">
         <div id="like-btn" class="feedback-btn">
             <img src="Likeicon.jpg" alt="Like">
-            <div id="like-count" class="feedback-count">138</div>
+            <div id="like-count" class="feedback-count">36</div>
         </div>
         <div id="dislike-btn" class="feedback-btn">
             <img src="Dislikeicon.jpg" alt="Dislike">
-            <div id="dislike-count" class="feedback-count">23</div>
+            <div id="dislike-count" class="feedback-count">4</div>
         </div>
     </div>
 
@@ -753,7 +753,7 @@
 
         // Typewriter Effect
         const bioElement = document.getElementById('profile-bio');
-        const phrases = ['locked in', 'I love gambling', 'passion project'];
+        const phrases = ['Best rust player', '6\'8 with an 8 pack'];
         let currentPhrase = 0;
         let isDeleting = false;
         let text = '';
@@ -780,7 +780,7 @@
         }
         type();
 
-        // Snowfall Mouse Trail
+        // Snowfall Mouse Trail (unchanged)
         const snowflakes = [];
         const maxSnowflakes = 30;
 
@@ -836,7 +836,6 @@
         }
         animateSnow();
 
-        // Optional click burst
         document.addEventListener('click', (e) => {
             for (let i = 0; i < 8; i++) {
                 setTimeout(() => {
@@ -872,7 +871,7 @@
             });
         }
 
-        // Volume Control
+        // Volume Control (unchanged)
         const volumeBtn = document.getElementById('volume-btn');
         const volumeSliderContainer = document.getElementById('volume-slider-container');
         const volumeSlider = document.getElementById('volume-slider');
@@ -891,13 +890,13 @@
             audio.volume = parseFloat(e.target.value);
         });
 
-        // Like/Dislike System
+        // Like/Dislike System (unchanged)
         const likeBtn = document.getElementById('like-btn');
         const dislikeBtn = document.getElementById('dislike-btn');
         const likeCount = document.getElementById('like-count');
         const dislikeCount = document.getElementById('dislike-count');
-        let likes = 138;
-        let dislikes = 23;
+        let likes = 35;
+        let dislikes = 4;
         let userVote = null;
         likeCount.textContent = likes;
         dislikeCount.textContent = dislikes;
@@ -928,7 +927,7 @@
         likeBtn.addEventListener('click', () => updateVote('like'));
         dislikeBtn.addEventListener('click', () => updateVote('dislike'));
 
-        // SONG TITLE & PROGRESS SYNC - FIXED
+        // Song Progress & Metadata
         const songTitleEl = document.getElementById('song-title');
         const progressBar = document.getElementById('progress-bar');
         const timeLabel = document.getElementById('time-label');
@@ -967,13 +966,8 @@
             }
         }
 
-        // Discord dot color CSS variable
-        const style = document.createElement('style');
-        style.innerHTML = `.discord-status-dot::after { background: var(--status-color, #747f8d); }`;
-        document.head.appendChild(style);
-
-        // DISCORD STATUS
-        const DISCORD_ID = '';
+        // Discord Status - YOUR ID APPLIED
+        const DISCORD_ID = '1175577892705538103';
 
         const discordAvatar = document.getElementById('discord-avatar');
         const discordUsername = document.getElementById('discord-username');
@@ -1064,7 +1058,7 @@
                 discordUsername.textContent = 'Failed to load Discord status';
             });
 
-        // Disable custom cursor on touch devices
+        // Touch device cursor disable
         if ('ontouchstart' in window) {
             document.body.classList.add('touch-device');
         }
