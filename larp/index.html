@@ -3,14 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Larps Profile</title>
+    <title>Larp Profile</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500&family=Poppins:wght@400;500&display=swap" rel="stylesheet">
+    <script type="module" src="https://cdn.jsdelivr.net/npm/music-metadata-browser@2.5.10/dist/index.min.js"></script>
     <style>
         :root {
             --primary-color: #fff;
             --secondary-color: rgba(255, 255, 255, 0.9);
             --accent-color: #5865F2;
-            --orange-color: #FF9500;
             --premium-color: #C71585;
             --background-color: #000;
             --glass-bg-start: rgba(0, 0, 0, 0.8);
@@ -33,7 +34,6 @@
             box-sizing: border-box;
             font-family: 'Inter', sans-serif;
         }
-        /* Black Screen with Click to Enter */
         #intro-screen {
             position: fixed;
             top: 0;
@@ -74,18 +74,20 @@
         #intro-text:hover {
             transform: scale(1.05);
         }
-        /* Custom Cursor */
-        .custom-cursor {
+
+        .snowflake {
             position: fixed;
-            width: 2.5rem;
-            height: 2.5rem;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 10%, transparent 20%);
-            border-radius: 50%;
             pointer-events: none;
-            z-index: 9999;
+            z-index: 9998;
+            width: 6px;
+            height: 6px;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.9;
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
             transform: translate(-50%, -50%);
-            transition: transform 0.1s ease, opacity var(--transition-fast);
         }
+
         body:not(.touch-device) {
             cursor: none;
         }
@@ -98,7 +100,7 @@
             align-items: center;
             min-height: 100vh;
         }
-        /* Background Video */
+
         #background-video {
             position: fixed;
             top: 0;
@@ -109,18 +111,33 @@
             z-index: 1;
             opacity: 0;
             transition: opacity var(--transition-slow);
-            filter: brightness(0.8);
         }
         #background-video.visible {
-            opacity: 0.5;
+            opacity: 1;
         }
-        /* Profile Block */
+
+        #video-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.2);
+            z-index: 2;
+            opacity: 0;
+            transition: opacity var(--transition-slow);
+            pointer-events: none;
+        }
+        #video-overlay.visible {
+            opacity: 1;
+        }
+
         #profile-block {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) perspective(1200px);
-            width: 51.25rem;
+            width: 44rem;
             min-height: 20.75rem;
             background: linear-gradient(135deg, var(--glass-bg-start), var(--glass-bg-end));
             border: 1px solid var(--border-color);
@@ -142,19 +159,53 @@
             opacity: 1;
             visibility: visible;
         }
+        #profile-block::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 1.25rem;
+            padding: 1px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity var(--transition-fast);
+        }
+        #profile-block:hover::before {
+            opacity: 1;
+        }
         #profile-block:hover {
             box-shadow: 0 0 2.5rem rgba(255, 255, 255, 0.25);
         }
 
+        .location-label {
+            position: absolute;
+            bottom: 0.15rem;
+            right: var(--spacing-medium);
+            color: var(--secondary-color);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            z-index: 30;
+        }
+        .location-label:hover {
+            color: var(--primary-color);
+            text-shadow: 0 0 0.5rem var(--glow-color);
+        }
+
         .profile-header {
+            position: relative;
             display: flex;
             align-items: flex-start;
             gap: var(--spacing-medium);
+            padding-bottom: 1.75rem;
         }
         .profile-container {
             position: relative;
-            width: 9.375rem;
-            height: 9.375rem;
+            width: 8.75rem;
+            height: 8.75rem;
             overflow: hidden;
             border-radius: 50%;
         }
@@ -206,37 +257,7 @@
             opacity: 1;
             transition: opacity 0.3s ease;
         }
-        .developer-badge {
-            background: #00ff7f;
-            color: white;
-            width: 2rem;
-            height: 2rem;
-            border-radius: 50%;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-        .developer-badge::before {
-            content: "EA";
-            font-size: 1rem;
-            font-weight: 700;
-        }
-        .developer-badge:hover {
-            border-radius: 0.5rem;
-            width: auto;
-            padding: 0.25rem 0.75rem;
-        }
-        .developer-badge:hover::before {
-            content: "early access";
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
         .premium-badge {
-            background: var(--premium-color);
-            color: white;
             width: 2rem;
             height: 2rem;
             border-radius: 50%;
@@ -244,8 +265,12 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s ease;
+            transition: all 0.4s ease;
             cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            color: white;
+            background: var(--premium-color);
         }
         .premium-badge::before {
             content: "★";
@@ -262,6 +287,7 @@
             font-size: 0.75rem;
             font-weight: 600;
         }
+
         #profile-bio {
             color: var(--secondary-color);
             font-size: 1.125rem;
@@ -318,7 +344,7 @@
         .social-button:hover img {
             transform: rotate(10deg);
         }
-        /* Notification */
+
         .notification {
             position: fixed;
             bottom: 1.25rem;
@@ -339,20 +365,7 @@
             opacity: 1;
             transform: translateY(0);
         }
-        /* Cursor Trail */
-        .cursor-trail-dot {
-            position: fixed;
-            width: 0.375rem;
-            height: 0.375rem;
-            background-color: rgba(255, 255, 255, 0.6);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 9998;
-            transform: translate(-50%, -50%);
-            transition: opacity var(--transition-fast);
-        }
 
-        /* Volume Control */
         .volume-control {
             position: fixed;
             top: var(--spacing-medium);
@@ -411,17 +424,7 @@
             cursor: pointer;
             box-shadow: 0 0 0.625rem rgba(88, 101, 242, 0.5);
         }
-        #volume-slider::-moz-range-thumb {
-            width: 1rem;
-            height: 1rem;
-            border-radius: 50%;
-            background: var(--accent-color);
-            cursor: pointer;
-            box-shadow: 0 0 0.625rem rgba(88, 101, 242, 0.5);
-            border: none;
-        }
 
-        /* Like/Dislike System */
         .feedback-control {
             position: fixed;
             bottom: var(--spacing-medium);
@@ -468,108 +471,275 @@
             text-align: center;
         }
 
-        /* Responsive */
+        .song-container {
+            width: 100%;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .song {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            width: 100%;
+        }
+        .songcover {
+            width: 100px;
+            height: 100px;
+            border-radius: 10px;
+            object-fit: cover;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+        .songinfo {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .songtitle {
+            color: white;
+            font-family: 'Rubik', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin: 4px 0;
+            text-align: left;
+        }
+        .progress-bar-container {
+            width: 80%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin: 1rem 0;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .progress-bar {
+            height: 100%;
+            background-color: #fff;
+            width: 0%;
+            transition: width 0.1s ease;
+            border-radius: 10px;
+        }
+        .time-label {
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .discord-container {
+            width: 100%;
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .discord-status {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            width: 100%;
+        }
+        .discord-avatar-container {
+            position: relative;
+            width: 84px;
+            height: 84px;
+        }
+        .discord-avatar {
+            width: 84px;
+            height: 84px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .discord-status-dot {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 26px;
+            height: 26px;
+            background: #fff;
+            border-radius: 50%;
+            border: 4px solid #000;
+            box-sizing: border-box;
+        }
+        .discord-status-dot::after {
+            content: '';
+            position: absolute;
+            inset: 4px;
+            background: var(--status-color, #747f8d);
+            border-radius: 50%;
+            transition: background 0.3s ease;
+        }
+        .discord-info {
+            flex: 1;
+        }
+        .discord-username {
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        .discord-custom-status {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1rem;
+            margin-top: 0.25rem;
+        }
+        .discord-activity {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .discord-activity img {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+        }
+        .discord-offline {
+            color: rgba(255, 255, 255, 0.5);
+            font-style: italic;
+        }
+
+        #weather-tab {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 44rem;
+            max-width: 90%;
+            background: linear-gradient(135deg, var(--glass-bg-start), var(--glass-bg-end));
+            border: 1px solid var(--border-color);
+            padding: var(--spacing-large);
+            border-radius: 1.25rem;
+            z-index: 25;
+            backdrop-filter: blur(0.9375rem);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity var(--transition-slow);
+            text-align: center;
+            color: var(--primary-color);
+            overflow-y: auto;
+            max-height: 90vh;
+        }
+        #weather-tab.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        #weather-tab h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+        #current-weather {
+            font-size: 3rem;
+            margin: 1rem 0;
+        }
+        #current-desc {
+            font-size: 1.4rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        .weekly-forecast {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .day-forecast {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 1rem;
+            font-size: 1.2rem;
+        }
+        .day-name {
+            width: 80px;
+            text-align: left;
+        }
+        .day-icon {
+            font-size: 1.8rem;
+            width: 50px;
+            text-align: center;
+        }
+        .day-temps {
+            display: flex;
+            gap: 1rem;
+        }
+        .day-low {
+            opacity: 0.7;
+        }
+        .back-btn {
+            margin-top: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border-color);
+            color: var(--primary-color);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: var(--transition-fast);
+        }
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+
         @media (max-width: 430px) {
-            #intro-text {
-                font-size: 2rem;
-                padding: 0 1.25rem;
-            }
             #profile-block {
-                width: 90vw;
-                max-width: 21.875rem;
-                min-height: 17.5rem;
-                padding: 1.25rem;
-            }
-            .profile-header {
-                flex-direction: column;
-                align-items: center;
-                gap: 0.9375rem;
+                width: 95%;
             }
             .profile-container {
                 width: 7.5rem;
                 height: 7.5rem;
             }
-            .profile-info {
-                align-items: center;
-                text-align: center;
+            .location-label {
+                font-size: 0.9rem;
+                bottom: 0.1rem;
+                right: 1rem;
             }
-            #profile-name {
-                font-size: 1.5rem;
+            #current-weather {
+                font-size: 2.5rem;
             }
-            .social-links {
-                gap: 0.75rem;
-            }
-            .social-button {
-                width: 2.25rem;
-                height: 2.25rem;
-            }
-            .social-button img {
-                width: 1.25rem;
-                height: 1.25rem;
-            }
-            .feedback-control {
-                bottom: 0.75rem;
-                left: 0.75rem;
-                padding: 0.4rem 0.8rem;
-                gap: 0.75rem;
-            }
-            .feedback-btn img {
-                width: 1.25rem;
-                height: 1.25rem;
-            }
-            .volume-control {
-                top: 0.75rem;
-                right: 0.75rem;
-            }
-            .volume-btn img {
-                width: 1.25rem;
-                height: 1.25rem;
-            }
-            .volume-slider-container.visible {
-                width: 7rem;
-            }
-        }
-        @media (max-width: 768px) and (min-width: 431px) {
-            #profile-block {
-                width: 80vw;
-                padding: 1.5rem;
-            }
-            #profile-name {
-                font-size: 1.75rem;
-            }
-            #profile-bio {
+            .day-forecast {
                 font-size: 1rem;
+                padding: 0.5rem;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Intro Screen -->
     <div id="intro-screen">
         <div id="intro-text">Click to Enter</div>
     </div>
-    <!-- Custom Cursor -->
-    <div class="custom-cursor"></div>
-    <!-- Background Video -->
+
     <video id="background-video" autoplay loop muted playsinline>
         <source src="background.mp4" type="video/mp4">
-        Your browser does not support the video tag.
     </video>
-    <!-- Background Audio -->
     <audio id="background-audio" loop preload="auto">
         <source src="Audio.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
     </audio>
-    <!-- Profile Block -->
+
     <div id="profile-block">
         <div class="profile-header">
+            <div class="location-label" id="location-label">𖡡 Miami</div>
             <div class="profile-container">
                 <img src="ProfilePicture.jpg" alt="Profile" class="profile-picture">
             </div>
             <div class="profile-info">
                 <div class="name-with-badge">
                     <div id="profile-name">Larp</div>
-                    <span class="developer-badge"></span>
                     <span class="premium-badge"></span>
                 </div>
                 <div id="profile-bio"></div>
@@ -591,12 +761,45 @@
                     <img src="solana.png" alt="Solana">
                 </button>
             </div>
+
+            <div class="song-container">
+                <div class="song">
+                    <img src="SongImage.png" alt="Song Cover" class="songcover">
+                    <div class="songinfo">
+                        <div class="songtitle" id="song-title">Loading title...</div>
+                    </div>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progress-bar"></div>
+                </div>
+                <div class="time-label" id="time-label">0:00 / 0:00</div>
+            </div>
+
+            <div class="discord-container">
+                <div class="discord-status">
+                    <div class="discord-avatar-container">
+                        <img id="discord-avatar" src="" alt="Discord Avatar" class="discord-avatar">
+                        <div class="discord-status-dot" id="status-dot"></div>
+                    </div>
+                    <div class="discord-info">
+                        <div id="discord-username" class="discord-username">Loading Discord status...</div>
+                        <div id="discord-custom" class="discord-custom-status"></div>
+                        <div id="discord-activity" class="discord-activity"></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-    <!-- Notification -->
-    <div id="notification" class="notification"></div>
 
-    <!-- Volume Control -->
+    <div id="weather-tab">
+        <h2>Weather in Miami Florida </h2>
+        <div id="current-weather">Loading...</div>
+        <div id="current-desc"></div>
+        <div class="weekly-forecast" id="weekly-forecast"></div>
+        <button class="back-btn" id="back-btn">← Back to Profile</button>
+    </div>
+
+    <div id="notification" class="notification"></div>
     <div id="volume-control" class="volume-control">
         <button id="volume-btn" class="volume-btn">
             <img src="Soundicon.jpg" alt="Volume">
@@ -605,31 +808,34 @@
             <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="1">
         </div>
     </div>
-
-    <!-- Like/Dislike System -->
     <div class="feedback-control">
         <div id="like-btn" class="feedback-btn">
             <img src="Likeicon.jpg" alt="Like">
-            <div id="like-count" class="feedback-count">58</div>
+            <div id="like-count" class="feedback-count">34</div>
         </div>
         <div id="dislike-btn" class="feedback-btn">
             <img src="Dislikeicon.jpg" alt="Dislike">
-            <div id="dislike-count" class="feedback-count">12</div>
+            <div id="dislike-count" class="feedback-count">7</div>
         </div>
     </div>
 
     <script>
-        // Handle Intro Screen and Audio
         const introScreen = document.getElementById('intro-screen');
         const profileBlock = document.getElementById('profile-block');
         const backgroundVideo = document.getElementById('background-video');
         const audio = document.getElementById('background-audio');
         const notification = document.getElementById('notification');
 
+        let hasEntered = false;
+
         document.addEventListener('click', () => {
+            if (hasEntered) return;
+            hasEntered = true;
+
             introScreen.classList.add('hidden');
             profileBlock.classList.add('visible');
             backgroundVideo.classList.add('visible');
+
             audio.muted = false;
             audio.volume = 1.0;
             audio.play().catch((error) => {
@@ -638,11 +844,12 @@
                 notification.classList.add('show');
                 setTimeout(() => notification.classList.remove('show'), 3000);
             });
+
+            loadMetadata();
         }, { once: true });
 
-        // Typewriter Effect
         const bioElement = document.getElementById('profile-bio');
-        const phrases = ['opsecspottedinphilly on discord', 'Biggest larp', 'I love skidding'];
+        const phrases = ['Gambling king', 'Larp king', 'Skid king'];
         let currentPhrase = 0;
         let isDeleting = false;
         let text = '';
@@ -669,96 +876,83 @@
         }
         type();
 
-        // === SMOOTH PANORAMIC/TILT EFFECT (same as Iayx profile) ===
-        let isHovering = false;
-        let targetTiltX = 0;
-        let targetTiltY = 0;
-        let currentTiltX = 0;
-        let currentTiltY = 0;
-        const smoothing = 0.12;
-        const maxTilt = 16;
+        const snowflakes = [];
+        const maxSnowflakes = 30;
 
-        function animateTilt() {
-            currentTiltX += (targetTiltX - currentTiltX) * smoothing;
-            currentTiltY += (targetTiltY - currentTiltY) * smoothing;
-
-            const scale = isHovering ? 1.02 : 1;
-
-            profileBlock.style.transform = 
-                `translate(-50%, -50%) perspective(1200px) ` +
-                `rotateX(${currentTiltX}deg) rotateY(${currentTiltY}deg) scale(${scale})`;
-
-            if (isHovering || Math.abs(currentTiltX) > 0.01 || Math.abs(currentTiltY) > 0.01) {
-                requestAnimationFrame(animateTilt);
-            }
-        }
-
-        profileBlock.addEventListener('mousemove', (e) => {
-            if (!profileBlock.classList.contains('visible')) return;
-
-            isHovering = true;
-
-            const rect = profileBlock.getBoundingClientRect();
-            const centerX = rect.left + rect.width / 2;
-            const centerY = rect.top + rect.height / 2;
-
-            const x = (e.clientX - centerX) / (rect.width / 2);
-            const y = (e.clientY - centerY) / (rect.height / 2);
-
-            const clampedX = Math.max(-1, Math.min(1, x));
-            const clampedY = Math.max(-1, Math.min(1, y));
-
-            targetTiltX = clampedY * maxTilt;
-            targetTiltY = clampedX * -maxTilt;
-
-            if (!window.tiltAnimationRunning) {
-                window.tiltAnimationRunning = true;
-                requestAnimationFrame(animateTilt);
-            }
-        });
-
-        profileBlock.addEventListener('mouseleave', () => {
-            isHovering = false;
-            targetTiltX = 0;
-            targetTiltY = 0;
-        });
-        // === END OF TILT ===
-
-        // Custom Cursor + Trail
-        const cursor = document.querySelector('.custom-cursor');
-        const trailDots = [];
-        const maxDots = 10;
-        let idleTimeout;
         document.addEventListener('mousemove', (e) => {
-            clearTimeout(idleTimeout);
-            cursor.style.opacity = '1';
-            cursor.style.left = e.clientX + 'px';
-            cursor.style.top = e.clientY + 'px';
+            const snowflake = document.createElement('div');
+            snowflake.className = 'snowflake';
+            snowflake.style.left = e.clientX + 'px';
+            snowflake.style.top = e.clientY + 'px';
 
-            const dot = document.createElement('div');
-            dot.className = 'cursor-trail-dot';
-            dot.style.left = e.clientX + 'px';
-            dot.style.top = e.clientY + 'px';
-            document.body.appendChild(dot);
-            trailDots.push(dot);
+            const size = Math.random() * 4 + 4;
+            snowflake.style.width = size + 'px';
+            snowflake.style.height = size + 'px';
 
-            if (trailDots.length > maxDots) {
-                const oldDot = trailDots.shift();
-                oldDot.style.opacity = '0';
-                setTimeout(() => oldDot.remove(), 300);
+            snowflake.drift = Math.random() * 2 - 1;
+            snowflake.velocityY = Math.random() * 1 + 1;
+            snowflake.life = 100;
+
+            document.body.appendChild(snowflake);
+            snowflakes.push(snowflake);
+
+            if (snowflakes.length > maxSnowflakes) {
+                const old = snowflakes.shift();
+                if (old && old.parentNode) old.remove();
             }
-
-            idleTimeout = setTimeout(() => {
-                cursor.style.opacity = '0';
-                trailDots.forEach(dot => {
-                    dot.style.opacity = '0';
-                    setTimeout(() => dot.remove(), 300);
-                });
-                trailDots.length = 0;
-            }, 500);
         });
 
-        // Copy to Clipboard
+        function animateSnow() {
+            snowflakes.forEach((flake, index) => {
+                if (!flake.parentNode) {
+                    snowflakes.splice(index, 1);
+                    return;
+                }
+
+                flake.life--;
+
+                let top = parseFloat(flake.style.top);
+                let left = parseFloat(flake.style.left);
+
+                top += flake.velocityY;
+                left += flake.drift;
+
+                flake.style.top = top + 'px';
+                flake.style.left = left + 'px';
+                flake.style.opacity = flake.life / 100;
+
+                if (flake.life <= 0) {
+                    flake.remove();
+                    snowflakes.splice(index, 1);
+                }
+            });
+
+            requestAnimationFrame(animateSnow);
+        }
+        animateSnow();
+
+        document.addEventListener('click', (e) => {
+            for (let i = 0; i < 8; i++) {
+                setTimeout(() => {
+                    const snowflake = document.createElement('div');
+                    snowflake.className = 'snowflake';
+                    snowflake.style.left = e.clientX + (Math.random() * 40 - 20) + 'px';
+                    snowflake.style.top = e.clientY + (Math.random() * 40 - 20) + 'px';
+
+                    const size = Math.random() * 5 + 3;
+                    snowflake.style.width = size + 'px';
+                    snowflake.style.height = size + 'px';
+
+                    snowflake.drift = Math.random() * 4 - 2;
+                    snowflake.velocityY = Math.random() * 2 + 1;
+                    snowflake.life = 80 + Math.random() * 40;
+
+                    document.body.appendChild(snowflake);
+                    snowflakes.push(snowflake);
+                }, i * 50);
+            }
+        });
+
         function copyToClipboard(value, type) {
             navigator.clipboard.writeText(value).then(() => {
                 notification.textContent = `Copied ${type} address`;
@@ -771,61 +965,43 @@
             });
         }
 
-        // Volume Control
         const volumeBtn = document.getElementById('volume-btn');
         const volumeSliderContainer = document.getElementById('volume-slider-container');
         const volumeSlider = document.getElementById('volume-slider');
-
         audio.volume = 1.0;
         volumeSlider.value = 1.0;
-
         volumeBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             volumeSliderContainer.classList.toggle('visible');
         });
-
         document.addEventListener('click', () => {
             if (volumeSliderContainer.classList.contains('visible')) {
                 volumeSliderContainer.classList.remove('visible');
             }
         });
-
         volumeSlider.addEventListener('input', (e) => {
-            const vol = parseFloat(e.target.value);
-            audio.volume = vol;
+            audio.volume = parseFloat(e.target.value);
         });
 
-        // Like/Dislike System - Fake starting values
         const likeBtn = document.getElementById('like-btn');
         const dislikeBtn = document.getElementById('dislike-btn');
         const likeCount = document.getElementById('like-count');
         const dislikeCount = document.getElementById('dislike-count');
-
-        let likes = 58;
-        let dislikes = 12;
+        let likes = 54;
+        let dislikes = 7;
         let userVote = null;
-
         likeCount.textContent = likes;
         dislikeCount.textContent = dislikes;
-
         function updateVote(type) {
             if (userVote === type) {
-                if (type === 'like') {
-                    likes--;
-                    likeBtn.classList.remove('active-like');
-                } else {
-                    dislikes--;
-                    dislikeBtn.classList.remove('active-dislike');
-                }
+                if (type === 'like') likes--;
+                else dislikes--;
                 userVote = null;
+                likeBtn.classList.remove('active-like');
+                dislikeBtn.classList.remove('active-dislike');
             } else {
-                if (userVote === 'like') {
-                    likes--;
-                    likeBtn.classList.remove('active-like');
-                } else if (userVote === 'dislike') {
-                    dislikes--;
-                    dislikeBtn.classList.remove('active-dislike');
-                }
+                if (userVote === 'like') likes--;
+                else if (userVote === 'dislike') dislikes--;
                 if (type === 'like') {
                     likes++;
                     likeBtn.classList.add('active-like');
@@ -837,15 +1013,220 @@
                 }
                 userVote = type;
             }
-
             likeCount.textContent = likes;
             dislikeCount.textContent = dislikes;
         }
-
         likeBtn.addEventListener('click', () => updateVote('like'));
         dislikeBtn.addEventListener('click', () => updateVote('dislike'));
 
-        // Detect touch device
+        const songTitleEl = document.getElementById('song-title');
+        const progressBar = document.getElementById('progress-bar');
+        const timeLabel = document.getElementById('time-label');
+
+        function formatTime(seconds) {
+            if (isNaN(seconds)) return "0:00";
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        }
+
+        function updateProgress() {
+            if (audio.duration) {
+                const percent = (audio.currentTime / audio.duration) * 100;
+                progressBar.style.width = percent + '%';
+                timeLabel.textContent = `${formatTime(audio.currentTime)} / ${formatTime(audio.duration)}`;
+            }
+        }
+
+        audio.addEventListener('timeupdate', updateProgress);
+        audio.addEventListener('loadedmetadata', updateProgress);
+        audio.addEventListener('durationchange', updateProgress);
+
+        async function loadMetadata() {
+            try {
+                const { parseBlob } = musicMetadata;
+                const response = await fetch('Audio.mp3');
+                if (!response.ok) throw new Error('Failed to fetch');
+                const blob = await response.blob();
+                const metadata = await parseBlob(blob);
+                const title = metadata.common.title || 'In & Out';
+                songTitleEl.textContent = title;
+            } catch (err) {
+                console.error('Metadata error:', err);
+                songTitleEl.textContent = 'In & Out';
+            }
+        }
+
+        const style = document.createElement('style');
+        style.innerHTML = `.discord-status-dot::after { background: var(--status-color, #747f8d); }`;
+        document.head.appendChild(style);
+
+        const DISCORD_ID = '1131058005790691328';
+
+        const discordAvatar = document.getElementById('discord-avatar');
+        const discordUsername = document.getElementById('discord-username');
+        const discordCustom = document.getElementById('discord-custom');
+        const discordActivity = document.getElementById('discord-activity');
+        const statusDot = document.getElementById('status-dot');
+
+        function updateDiscordStatus(data) {
+            if (!data || !data.discord_user) {
+                discordUsername.textContent = 'Discord offline or unavailable';
+                discordUsername.classList.add('discord-offline');
+                discordAvatar.src = '';
+                statusDot.style.display = 'none';
+                return;
+            }
+
+            const user = data.discord_user;
+            discordAvatar.src = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=128`;
+            discordUsername.textContent = user.global_name || user.username;
+            discordUsername.classList.remove('discord-offline');
+            statusDot.style.display = 'block';
+
+            const status = data.discord_status;
+            let dotColor = '#747f8d';
+            if (status === 'online') dotColor = '#43b581';
+            else if (status === 'idle') dotColor = '#faa61a';
+            else if (status === 'dnd') dotColor = '#f04747';
+            statusDot.style.setProperty('--status-color', dotColor);
+
+            discordCustom.innerHTML = '';
+            if (data.activities) {
+                const custom = data.activities.find(a => a.type === 4);
+                if (custom && custom.state) {
+                    let text = custom.state;
+                    if (custom.emoji && custom.emoji.id) {
+                        text = `<img src="https://cdn.discordapp.com/emojis/${custom.emoji.id}.png" style="width:20px;height:20px;vertical-align:middle;margin-right:4px;">${text}`;
+                    } else if (custom.emoji) {
+                        text = `${custom.emoji.name} ${text}`;
+                    }
+                    discordCustom.innerHTML = text;
+                }
+            }
+
+            discordActivity.innerHTML = '';
+            const activity = data.activities?.find(a => a.type === 0 || (a.name === 'Spotify' && data.listening_to_spotify));
+            if (activity) {
+                let text = '';
+                let img = '';
+
+                if (data.listening_to_spotify && activity.name === 'Spotify') {
+                    text = `Listening to ${activity.details} by ${activity.state}`;
+                    if (activity.assets?.large_image) {
+                        img = `https://i.scdn.co/image/${activity.assets.large_image.split('spotify:')[1]}`;
+                    }
+                } else {
+                    text = `Playing ${activity.name}`;
+                    if (activity.details) text += `: ${activity.details}`;
+                    if (activity.assets?.large_image && activity.application_id) {
+                        img = `https://media.discordapp.net/app-assets/${activity.application_id}/${activity.assets.large_image}.png`;
+                    }
+                }
+
+                if (img) discordActivity.innerHTML += `<img src="${img}" alt="Activity">`;
+                discordActivity.innerHTML += `<span>${text}</span>`;
+            }
+        }
+
+        const ws = new WebSocket('wss://api.lanyard.rest/socket');
+        ws.onopen = () => {
+            ws.send(JSON.stringify({
+                op: 2,
+                d: { subscribe_to_id: DISCORD_ID }
+            }));
+            setInterval(() => ws.send(JSON.stringify({ op: 3 })), 30000);
+        };
+
+        ws.onmessage = (event) => {
+            const msg = JSON.parse(event.data);
+            if (msg.t === 'INIT_STATE' || msg.t === 'PRESENCE_UPDATE') {
+                updateDiscordStatus(msg.d);
+            }
+        };
+
+        fetch(`https://api.lanyard.rest/v1/users/${DISCORD_ID}`)
+            .then(res => res.json())
+            .then(json => updateDiscordStatus(json.data))
+            .catch(() => {
+                discordUsername.textContent = 'Failed to load Discord status';
+            });
+
+        const locationLabel = document.getElementById('location-label');
+        const weatherTab = document.getElementById('weather-tab');
+        const currentWeather = document.getElementById('current-weather');
+        const currentDesc = document.getElementById('current-desc');
+        const weeklyForecast = document.getElementById('weekly-forecast');
+        const backBtn = document.getElementById('back-btn');
+
+        const weatherIcons = {
+            0: '☀️', 1: '🌤️', 2: '⛅', 3: '☁️',
+            45: '🌫️', 48: '🌫️',
+            51: '🌦️', 61: '🌧️', 80: '🌧️',
+            95: '⛈️'
+        };
+
+        const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+        locationLabel.addEventListener('click', async () => {
+            profileBlock.style.opacity = '0';
+            weatherTab.classList.add('visible');
+
+            currentWeather.textContent = 'Loading...';
+            currentDesc.textContent = '';
+            weeklyForecast.innerHTML = '';
+
+            try {
+                const url = 'https://api.open-meteo.com/v1/forecast?latitude=25.7617&longitude=-80.1918&daily=temperature_2m_max,temperature_2m_min,weather_code&current=temperature_2m,weather_code&temperature_unit=fahrenheit&timezone=America%2FNew_York&forecast_days=7';
+                const res = await fetch(url);
+                const data = await res.json();
+
+                const currentTempF = Math.round(data.current.temperature_2m);
+                const currentCode = data.current.weather_code;
+                const currentIcon = weatherIcons[currentCode] || '🌡️';
+                const currentDescription = {
+                    0: 'Clear sky', 1: 'Mainly clear', 2: 'Partly cloudy', 3: 'Overcast',
+                    45: 'Fog', 51: 'Light rain', 61: 'Rain', 80: 'Rain showers', 95: 'Thunderstorm'
+                }[currentCode] || 'Unknown';
+
+                currentWeather.innerHTML = `${currentIcon} ${currentTempF}°F`;
+                currentDesc.textContent = currentDescription;
+
+                const dates = data.daily.time;
+                const highs = data.daily.temperature_2m_max;
+                const lows = data.daily.temperature_2m_min;
+                const codes = data.daily.weather_code;
+
+                dates.forEach((dateStr, i) => {
+                    const date = new Date(dateStr);
+                    const dayName = i === 0 ? 'Today' : dayNames[date.getDay()];
+                    const high = Math.round(highs[i]);
+                    const low = Math.round(lows[i]);
+                    const icon = weatherIcons[codes[i]] || '🌤️';
+
+                    const dayEl = document.createElement('div');
+                    dayEl.className = 'day-forecast';
+                    dayEl.innerHTML = `
+                        <span class="day-name">${dayName}</span>
+                        <span class="day-icon">${icon}</span>
+                        <span class="day-temps">
+                            <span class="day-low">${low}°</span>
+                            <span>${high}°</span>
+                        </span>
+                    `;
+                    weeklyForecast.appendChild(dayEl);
+                });
+            } catch (err) {
+                currentWeather.textContent = 'Failed to load weather';
+                console.error(err);
+            }
+        });
+
+        backBtn.addEventListener('click', () => {
+            weatherTab.classList.remove('visible');
+            profileBlock.style.opacity = '1';
+        });
+
         if ('ontouchstart' in window) {
             document.body.classList.add('touch-device');
         }
