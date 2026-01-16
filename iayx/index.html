@@ -104,38 +104,38 @@
             align-items: center;
             min-height: 100vh;
         }
-/* Background Video - FULL BRIGHTNESS + OVERLAY */
-#background-video {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    z-index: 1;
-    opacity: 0;
-    transition: opacity var(--transition-slow);
-}
-#background-video.visible {
-    opacity: 1;
-}
+        /* Background Video - FULL BRIGHTNESS + OVERLAY */
+        #background-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 1;
+            opacity: 0;
+            transition: opacity var(--transition-slow);
+        }
+        #background-video.visible {
+            opacity: 1;
+        }
 
-/* Dark overlay for readability */
-#video-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.2);
-    z-index: 2;
-    opacity: 0;
-    transition: opacity var(--transition-slow);
-    pointer-events: none;
-}
-#video-overlay.visible {
-    opacity: 1;
-}
+        /* Dark overlay for readability */
+        #video-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.2);
+            z-index: 2;
+            opacity: 0;
+            transition: opacity var(--transition-slow);
+            pointer-events: none;
+        }
+        #video-overlay.visible {
+            opacity: 1;
+        }
 
         /* SIZED DOWN PROFILE BLOCK */
         #profile-block {
@@ -792,6 +792,18 @@
                     </div>
                 </div>
             </div>
+
+            <!-- STATIC DISCORD SERVER SECTION -->
+            <div style="width:100%; margin-top:1rem; padding:0.8rem 1rem; background:rgba(255,255,255,0.05); border-radius:1rem; border:1px solid rgba(255,255,255,0.1); backdrop-filter:blur(10px); display:flex; align-items:center; justify-content:space-between; gap:0.8rem; flex-wrap:wrap;">
+                <div style="display:flex; align-items:center; gap:0.8rem; min-width:0; flex:1;">
+                    <img src="ServerLogo.png" alt="Oblivion Server" style="width:48px; height:48px; border-radius:50%; object-fit:cover; border:2px solid rgba(255,255,255,0.15); flex-shrink:0;">
+                    <div style="min-width:0; flex:1;">
+                        <div style="color:white; font-size:1.15rem; font-weight:600; font-family:'Rubik', sans-serif; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Oblivion</div>
+                    </div>
+                </div>
+                <a href="https://discord.gg/MxmB8jfRtZ" target="_blank" style="display:inline-block; background:#43b581; color:white; font-weight:600; padding:0.55rem 1.4rem; border-radius:9999px; text-decoration:none; transition:all 0.3s ease; font-size:0.95rem; white-space:nowrap; border:none; cursor:pointer; box-shadow:0 2px 8px rgba(67,181,129,0.3);">Join</a>
+            </div>
+
         </div>
     </div>
 
@@ -1062,11 +1074,11 @@
                 if (!response.ok) throw new Error('Failed to fetch');
                 const blob = await response.blob();
                 const metadata = await parseBlob(blob);
-                const title = metadata.common.title || 'NUK3';
+                const title = metadata.common.title || 'Snares (Judo)';
                 songTitleEl.textContent = title;
             } catch (err) {
                 console.error('Metadata error:', err);
-                songTitleEl.textContent = 'NUK3';
+                songTitleEl.textContent = 'Snares (Judo)';
             }
         }
 
