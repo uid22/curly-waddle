@@ -1,100 +1,349 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coming Soon</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: #000;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #ffffff;
-            font-family: 'Arial Black', 'Arial', sans-serif;
-            overflow: hidden;
-            position: relative;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LinkPage – Sign in or create account</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-        .coming-soon {
-            font-size: 6em;
-            text-align: center;
-            text-shadow: 0 0 20px #ffcc00, 0 0 40px #ffcc00;
-            animation: pulse 4s infinite alternate;
-            z-index: 2;
-        }
+    :root {
+      --pink-bright: #F9C4FF;
+      --pink-glow: rgba(249, 196, 255, 0.55);
+      --pink-dark: #d89eff;
+      --bg-dark: #000000;
+      --text-light: #f0f0ff;
+      --text-muted: #cccccc;
+    }
 
-        @keyframes pulse {
-            0% { opacity: 0.9; transform: scale(1); }
-            100% { opacity: 1; transform: scale(1.05); }
-        }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-light);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
 
-        /* Police Tape Top - Stripes only */
-        .tape-top {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 200%;
-            height: 80px;
-            background: repeating-linear-gradient(
-                45deg,
-                #ffcc00,
-                #ffcc00 40px,
-                #000 40px,
-                #000 80px
-            );
-            animation: moveLeft 30s linear infinite;
-            z-index: 1;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.8);
-        }
+    /* STAR BACKGROUND */
+    .bubbles {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .bubble {
+      position: absolute;
+      background: var(--pink-bright);
+      border-radius: 50%;
+      animation: twinkle 4.5s ease-in-out infinite;
+      opacity: 0.4;
+      box-shadow: 0 0 8px var(--pink-glow);
+    }
+    .bubble:nth-child(even) {
+      background: #ffffff;
+      opacity: 0.22;
+    }
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.25; transform: scale(1); }
+      50%      { opacity: 0.85; transform: scale(1.35); }
+    }
 
-        /* Police Tape Bottom - Stripes only */
-        .tape-bottom {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 200%;
-            height: 80px;
-            background: repeating-linear-gradient(
-                45deg,
-                #ffcc00,
-                #ffcc00 40px,
-                #000 40px,
-                #000 80px
-            );
-            animation: moveRight 35s linear infinite;
-            z-index: 1;
-            box-shadow: 0 -4px 10px rgba(0,0,0,0.8);
-        }
+    .shooting-star {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background: var(--pink-bright);
+      border-radius: 50%;
+      box-shadow:
+        0 0 14px 5px var(--pink-bright),
+        0 0 35px 12px var(--pink-glow),
+        0 0 70px 25px rgba(249,196,255,0.3);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+    @keyframes fly {
+      0%   { opacity: 0; transform: translate(0, 0); }
+      5%   { opacity: 1; }
+      70%  { opacity: 0.92; }
+      100% { opacity: 0; transform: translate(var(--dx), var(--dy)); }
+    }
 
-        @keyframes moveLeft {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
+    /* GLASS CARD */
+    .glass-card {
+      background: rgba(18, 10, 25, 0.5);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(249,196,255,0.22);
+      border-radius: 24px;
+      box-shadow: 0 12px 40px rgba(249,196,255,0.18);
+      overflow: hidden;
+      position: relative;
+      z-index: 10;
+    }
+    .glass-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        135deg,
+        rgba(249,196,255,0.08) 0%,
+        rgba(249,196,255,0.03) 50%,
+        rgba(0,0,0,0.2) 100%
+      );
+      pointer-events: none;
+      z-index: -1;
+    }
 
-        @keyframes moveRight {
-            0% { transform: translateX(-50%); }
-            100% { transform: translateX(0); }
-        }
+    .input-field {
+      background: rgba(30, 20, 40, 0.65);
+      border: 1px solid rgba(249,196,255,0.18);
+      border-radius: 14px;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(8px);
+    }
+    .input-field:focus-within {
+      border-color: var(--pink-bright);
+      box-shadow: 0 0 0 4px var(--pink-glow);
+      background: rgba(40, 25, 55, 0.75);
+    }
+    .input-field input::placeholder {
+      color: #888;
+    }
 
-        @media (max-width: 768px) {
-            .coming-soon {
-                font-size: 4em;
-            }
-            .tape-top, .tape-bottom {
-                height: 60px;
-            }
-        }
-    </style>
+    .btn-primary {
+      background: linear-gradient(135deg, var(--pink-bright), var(--pink-dark));
+      border: none;
+      color: #000;
+      font-weight: 700;
+      transition: all 0.35s ease;
+      box-shadow: 0 6px 20px var(--pink-glow);
+    }
+    .btn-primary:hover {
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 15px 40px rgba(249,196,255,0.7);
+    }
+
+    .tab-active {
+      color: #000;
+      background: var(--pink-bright);
+      border-bottom: 3px solid #000;
+    }
+    .tab-inactive {
+      color: var(--text-muted);
+    }
+    .tab-inactive:hover {
+      color: var(--text-light);
+      background: rgba(249,196,255,0.1);
+    }
+
+    /* FORM ANIMATION */
+    .form-wrapper {
+      position: relative;
+      overflow: hidden;
+      min-height: 260px;
+    }
+    .form-page {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transform: translateY(24px);
+      transition: all 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+      pointer-events: none;
+    }
+    .form-page.active {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+    .form-page:not(.active) {
+      transition-duration: 0.32s;
+      transform: translateY(-14px);
+    }
+
+    /* Footer links style */
+    .footer-link {
+      color: var(--text-muted);
+      transition: color 0.2s;
+    }
+    .footer-link:hover {
+      color: var(--pink-bright);
+    }
+  </style>
 </head>
 <body>
-    <div class="tape-top"></div>
+  <!-- STAR BACKGROUND -->
+  <div class="bubbles" id="starContainer">
+    <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
+    <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
+    <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
+    <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
+  </div>
 
-    <h1 class="coming-soon">COMING SOON</h1>
+  <div class="flex items-center justify-center min-h-screen p-6 relative z-10">
+    <div class="w-full max-w-md">
+      <!-- Logo with glow -->
+      <div class="text-center mb-10">
+        <h1 class="text-6xl font-black tracking-tighter text-white drop-shadow-[0_0_30px_rgba(249,196,255,0.7)]">
+          LinkPage
+        </h1>
+      </div>
 
-    <div class="tape-bottom"></div>
+      <!-- Glass card -->
+      <div class="glass-card p-8 md:p-10">
+        <!-- Tabs -->
+        <div class="flex mb-8 border-b border-white/5">
+          <button id="tab-signin" class="tab-active px-6 py-3 font-bold text-lg flex-1 text-center transition-all rounded-t-lg" onclick="showForm('signin')">
+            Sign in
+          </button>
+          <button id="tab-signup" class="tab-inactive px-6 py-3 font-bold text-lg flex-1 text-center transition-all rounded-t-lg" onclick="showForm('signup')">
+            Create account
+          </button>
+        </div>
+
+        <!-- Forms wrapper -->
+        <div class="form-wrapper">
+          <!-- Sign In -->
+          <form id="form-signin" class="form-page space-y-6 active">
+            <div>
+              <label class="block text-sm font-medium text-gray-200 mb-2">Email or username</label>
+              <div class="input-field">
+                <input type="text" placeholder="you@example.com" class="w-full bg-transparent px-5 py-4 text-white placeholder-gray-600 focus:outline-none" required />
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-200 mb-2">Password</label>
+              <div class="input-field relative">
+                <input type="password" id="signin-password" placeholder="••••••••" class="w-full bg-transparent px-5 py-4 text-white placeholder-gray-600 focus:outline-none pr-12" required />
+                <button type="button" onclick="togglePassword('signin-password', this)" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[var(--pink-bright)] transition-colors">👁</button>
+              </div>
+            </div>
+            <div class="flex items-center justify-between text-sm">
+              <label class="flex items-center gap-2">
+                <input type="checkbox" class="h-4 w-4 bg-transparent border-[var(--pink-bright)]/40 rounded accent-[var(--pink-bright)]" />
+                <span class="text-gray-200">Stay signed in</span>
+              </label>
+              <a href="#" class="text-gray-200 hover:text-[var(--pink-bright)] hover:underline">Forgot password?</a>
+            </div>
+            <button type="button" onclick="fakeSubmit(this, 'Signing in...')" class="btn-primary w-full py-4 rounded-xl font-bold text-lg mt-2">
+              Sign in
+            </button>
+          </form>
+
+          <!-- Create Account - only invite code -->
+          <form id="form-signup" class="form-page space-y-6">
+            <div>
+              <label class="block text-sm font-medium text-gray-200 mb-2">
+                Invite code <span class="text-[var(--pink-bright)] text-xs ml-1.5">(required)</span>
+              </label>
+              <div class="input-field">
+                <input type="text" placeholder="XXXX-XXXX-XXXX" id="invite-code" pattern="[A-Za-z0-9\-]{11,14}" title="Format: XXXX-XXXX-XXXX" class="w-full bg-transparent px-5 py-4 text-white placeholder-gray-600 focus:outline-none" required autofocus />
+              </div>
+              <p class="mt-2 text-xs text-gray-500">Enter your invite code</p>
+            </div>
+            <button type="button" onclick="fakeSignup(this)" class="btn-primary w-full py-4 rounded-xl font-bold text-lg mt-4">
+              Create account
+            </button>
+          </form>
+        </div>
+
+        <!-- Updated footer links -->
+        <p class="text-center text-sm text-gray-500 mt-8">
+          By continuing, you agree to our 
+          <a href="tos.html" class="footer-link">Terms</a> & 
+          <a href="tos.html" class="footer-link">Privacy Policy</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Shooting stars
+    function createShootingStar() {
+      const star = document.createElement('div');
+      star.className = 'shooting-star';
+      const startY = Math.random() * 100;
+      const rightToLeft = Math.random() < 0.55;
+      let startX, dx, dy;
+      if (rightToLeft) {
+        startX = 120 + Math.random() * 50;
+        dx = -(180 + Math.random() * 150);
+        dy = 50 + Math.random() * 150;
+      } else {
+        startX = -70 - Math.random() * 50;
+        dx = 180 + Math.random() * 150;
+        dy = -50 - Math.random() * 150;
+      }
+      star.style.top = `${startY}%`;
+      star.style.left = `${startX}%`;
+      const duration = 1.7 + Math.random() * 3;
+      const delay = Math.random() * 2.2;
+      star.style.setProperty('--dx', `${dx}vw`);
+      star.style.setProperty('--dy', `${dy}vh`);
+      document.getElementById('starContainer').appendChild(star);
+      setTimeout(() => star.remove(), (duration + delay + 1) * 1000);
+      setTimeout(createShootingStar, 900 + Math.random() * 2400);
+    }
+
+    function showForm(type) {
+      const signin  = document.getElementById('form-signin');
+      const signup  = document.getElementById('form-signup');
+      const tabSignin = document.getElementById('tab-signin');
+      const tabSignup = document.getElementById('tab-signup');
+
+      if (type === 'signin') {
+        signin.classList.add('active');
+        signup.classList.remove('active');
+        tabSignin.classList.add('tab-active');
+        tabSignin.classList.remove('tab-inactive');
+        tabSignup.classList.remove('tab-active');
+        tabSignup.classList.add('tab-inactive');
+      } else {
+        signup.classList.add('active');
+        signin.classList.remove('active');
+        tabSignup.classList.add('tab-active');
+        tabSignup.classList.remove('tab-inactive');
+        tabSignin.classList.remove('tab-active');
+        tabSignin.classList.add('tab-inactive');
+      }
+    }
+
+    function togglePassword(id, btn) {
+      const input = document.getElementById(id);
+      input.type = input.type === 'password' ? 'text' : 'password';
+      btn.textContent = input.type === 'password' ? '👁' : '🙈';
+    }
+
+    function fakeSubmit(btn, loadingText = 'Processing...') {
+      const original = btn.innerHTML;
+      btn.disabled = true;
+      btn.textContent = loadingText;
+      setTimeout(() => {
+        btn.innerHTML = original;
+        btn.disabled = false;
+        alert("Success (demo mode)");
+      }, 1400);
+    }
+
+    function fakeSignup(btn) {
+      const code = document.getElementById('invite-code').value.trim();
+      if (!code || !/^[A-Za-z0-9\-]{11,14}$/.test(code)) {
+        alert("Please enter a valid invite code (XXXX-XXXX-XXXX)");
+        return;
+      }
+      fakeSubmit(btn, 'Creating account...');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(createShootingStar, 500);
+      showForm('signin');
+    });
+  </script>
 </body>
 </html>
