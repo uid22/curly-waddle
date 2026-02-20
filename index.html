@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="color-scheme" content="dark light">
     <title>Iayx Profile</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500&family=Poppins:wght@400;500&display=swap" rel="stylesheet">
@@ -32,38 +31,6 @@
             --transition-fast: 0.3s ease;
             --transition-slow: 1s ease-in-out;
         }
-
-        html {
-            color-scheme: dark;
-        }
-
-        body {
-            background-color: var(--background-color);
-            color: var(--primary-color);
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            image-rendering: crisp-edges;           /* helps with pixel art / sharp png edges */
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-
-        img {
-            image-rendering: -webkit-optimize-contrast; /* Chrome/Edge */
-            image-rendering: crisp-edges;               /* Firefox */
-            max-width: 100%;
-        }
-
-        .social-button img {
-            filter: brightness(1) contrast(1) saturate(1.05); /* slight boost to prevent dullness */
-            width: 2.2rem;
-            height: 2.2rem;
-            transition: transform var(--transition-fast);
-        }
-
-        /* Rest of your original styles remain unchanged below */
         * {
             margin: 0;
             padding: 0;
@@ -128,6 +95,15 @@
 
         body:not(.touch-device) {
             cursor: none;
+        }
+        body {
+            background-color: var(--background-color);
+            color: var(--primary-color);
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
         }
         
         #background-video {
@@ -344,6 +320,11 @@
             cursor: pointer;
             pointer-events: auto;
             backdrop-filter: blur(10px);
+        }
+        .social-button img {
+            width: 2.2rem;
+            height: 2.2rem;
+            transition: transform var(--transition-fast);
         }
         .social-button:hover {
             transform: scale(1.08);
@@ -731,7 +712,6 @@
     </style>
 </head>
 <body>
-    <!-- The rest of your HTML body remains exactly the same -->
     <div id="intro-screen">
         <div id="intro-text">Click to Enter</div>
     </div>
@@ -744,6 +724,8 @@
     </audio>
 
     <div id="profile-block">
+
+        
         <div id="left-card">
             <div class="discord-avatar-container">
                 <img id="discord-avatar" src="" alt="Discord Avatar" class="discord-avatar">
@@ -758,6 +740,7 @@
             <div id="pst-clock" style="color:rgba(255,255,255,0.5);font-size:0.82rem;text-align:center;letter-spacing:0.03em;font-variant-numeric:tabular-nums;"></div>
         </div>
 
+        
         <div id="right-side">
             <div>
                 <div class="name-with-badge">
@@ -766,6 +749,7 @@
                 <div id="profile-bio"></div>
             </div>
 
+            
             <div style="padding:0.8rem 1rem; background:rgba(255,255,255,0.05); border-radius:1rem; border:1px solid rgba(255,255,255,0.1); backdrop-filter:blur(10px); display:flex; align-items:center; justify-content:space-between; gap:0.8rem;">
                 <div style="display:flex; align-items:center; gap:0.8rem; min-width:0; flex:1;">
                     <img src="ServerLogo.png" alt="Incel Server" style="width:44px; height:44px; border-radius:50%; object-fit:cover; border:2px solid rgba(255,255,255,0.15); flex-shrink:0;">
@@ -774,6 +758,7 @@
                 <a href="https://discord.gg/MxmB8jfRtZ" target="_blank" style="display:inline-block; background:#43b581; color:white; font-weight:600; padding:0.5rem 1.2rem; border-radius:9999px; text-decoration:none; font-size:0.9rem; white-space:nowrap; flex-shrink:0; box-shadow:0 2px 8px rgba(67,181,129,0.3);">Join</a>
             </div>
 
+            
             <div class="social-links">
                 <button onclick="openCryptoModal('Bitcoin','bitcoin','bc1q7urjtd2naxmajcvylmmz5clqyc3mfmvauw9kmt','#F7931A')" class="social-button">
                     <img src="Bitcoin.png" alt="Bitcoin">
@@ -790,6 +775,7 @@
             </div>
         </div>
 
+        
         <div class="discord-container" style="display:none;">
             <div class="discord-status"></div>
         </div>
@@ -799,6 +785,7 @@
             <div class="profile-container"><img src="ProfilePicture.jpg" alt="Profile" class="profile-picture"></div>
             <div class="profile-info"></div>
         </div>
+
     </div>
 
     <div id="weather-tab">
@@ -823,9 +810,380 @@
         </div>
     </div>
 
-    <!-- Your existing scripts remain unchanged -->
     <script>
-        // ... (all your original JavaScript code here - no changes needed) ...
+        
+        const introScreen = document.getElementById('intro-screen');
+        const profileBlock = document.getElementById('profile-block');
+        const backgroundVideo = document.getElementById('background-video');
+        const audio = document.getElementById('background-audio');
+        const notification = document.getElementById('notification');
+        const volumeControl = document.getElementById('volume-control');
+
+        let hasEntered = false;
+
+        document.addEventListener('click', () => {
+            if (hasEntered) return;
+            hasEntered = true;
+
+            introScreen.classList.add('hidden');
+
+            backgroundVideo.classList.add('visible');
+            audio.muted = false;
+            audio.volume = 1.0;
+            audio.play().catch((error) => {
+                console.error('Audio playback failed:', error);
+                notification.textContent = 'Click again to enable audio';
+                notification.classList.add('show');
+                setTimeout(() => notification.classList.remove('show'), 3000);
+            });
+
+            loadMetadata();
+
+            
+            setTimeout(() => {
+                profileBlock.classList.add('visible');
+                volumeControl.classList.add('visible');
+            }, 3300);
+        }, { once: true });
+
+        
+        function makeTypewriter(elementId, phrases, typeSpeed, deleteSpeed, pauseAfterType, pauseAfterDelete) {
+            const el = document.getElementById(elementId);
+            let phraseIdx = 0, charIdx = 0, deleting = false;
+            function tick() {
+                const full = phrases[phraseIdx];
+                if (!deleting) {
+                    charIdx++;
+                    el.textContent = full.substring(0, charIdx);
+                    if (charIdx >= full.length) {
+                        deleting = true;
+                        setTimeout(tick, pauseAfterType);
+                        return;
+                    }
+                } else {
+                    charIdx--;
+                    el.textContent = full.substring(0, charIdx);
+                    if (charIdx <= 0) {
+                        deleting = false;
+                        phraseIdx = (phraseIdx + 1) % phrases.length;
+                        setTimeout(tick, pauseAfterDelete);
+                        return;
+                    }
+                }
+                setTimeout(tick, deleting ? deleteSpeed : typeSpeed);
+            }
+            tick();
+        }
+
+        makeTypewriter('profile-bio', ['Creds to nob for layout idea', 'I like cs2', 'Owner of /Incl'], 80, 40, 1500, 400);
+
+        
+        const snowflakes = [];
+        const maxSnowflakes = 30;
+
+        document.addEventListener('mousemove', (e) => {
+            const snowflake = document.createElement('div');
+            snowflake.className = 'snowflake';
+            snowflake.style.left = e.clientX + 'px';
+            snowflake.style.top = e.clientY + 'px';
+
+            const size = Math.random() * 4 + 4;
+            snowflake.style.width = size + 'px';
+            snowflake.style.height = size + 'px';
+
+            snowflake.drift = Math.random() * 2 - 1;
+            snowflake.velocityY = Math.random() * 1 + 1;
+            snowflake.life = 100;
+
+            document.body.appendChild(snowflake);
+            snowflakes.push(snowflake);
+
+            if (snowflakes.length > maxSnowflakes) {
+                const old = snowflakes.shift();
+                if (old && old.parentNode) old.remove();
+            }
+        });
+
+        function animateSnow() {
+            snowflakes.forEach((flake, index) => {
+                if (!flake.parentNode) {
+                    snowflakes.splice(index, 1);
+                    return;
+                }
+
+                flake.life--;
+
+                let top = parseFloat(flake.style.top);
+                let left = parseFloat(flake.style.left);
+
+                top += flake.velocityY;
+                left += flake.drift;
+
+                flake.style.top = top + 'px';
+                flake.style.left = left + 'px';
+                flake.style.opacity = flake.life / 100;
+
+                if (flake.life <= 0) {
+                    flake.remove();
+                    snowflakes.splice(index, 1);
+                }
+            });
+
+            requestAnimationFrame(animateSnow);
+        }
+        animateSnow();
+
+        
+        document.addEventListener('click', (e) => {
+            for (let i = 0; i < 8; i++) {
+                setTimeout(() => {
+                    const snowflake = document.createElement('div');
+                    snowflake.className = 'snowflake';
+                    snowflake.style.left = e.clientX + (Math.random() * 40 - 20) + 'px';
+                    snowflake.style.top = e.clientY + (Math.random() * 40 - 20) + 'px';
+
+                    const size = Math.random() * 5 + 3;
+                    snowflake.style.width = size + 'px';
+                    snowflake.style.height = size + 'px';
+
+                    snowflake.drift = Math.random() * 4 - 2;
+                    snowflake.velocityY = Math.random() * 2 + 1;
+                    snowflake.life = 80 + Math.random() * 40;
+
+                    document.body.appendChild(snowflake);
+                    snowflakes.push(snowflake);
+                }, i * 50);
+            }
+        });
+
+        
+        function copyToClipboard(value, type) {
+            navigator.clipboard.writeText(value).then(() => {
+                notification.textContent = `Copied ${type} address`;
+                notification.classList.add('show');
+                setTimeout(() => notification.classList.remove('show'), 3000);
+            }).catch(() => {
+                notification.textContent = 'Failed to copy address';
+                notification.classList.add('show');
+                setTimeout(() => notification.classList.remove('show'), 3000);
+            });
+        }
+
+        
+        const volumeBtn = document.getElementById('volume-btn');
+        const volumeSliderContainer = document.getElementById('volume-slider-container');
+        const volumeSlider = document.getElementById('volume-slider');
+        audio.volume = 1.0;
+        volumeSlider.value = 1.0;
+        volumeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            volumeSliderContainer.classList.toggle('visible');
+        });
+        document.addEventListener('click', () => {
+            if (volumeSliderContainer.classList.contains('visible')) {
+                volumeSliderContainer.classList.remove('visible');
+            }
+        });
+        volumeSlider.addEventListener('input', (e) => {
+            audio.volume = parseFloat(e.target.value);
+        });
+
+        
+        async function loadMetadata() {
+            try {
+                const { parseBlob } = musicMetadata;
+                const response = await fetch('Audio.mp3');
+                if (!response.ok) throw new Error('Failed to fetch');
+                const blob = await response.blob();
+                const metadata = await parseBlob(blob);
+                const title = metadata.common.title || 'Snares (Judo)';
+                console.log('Song title:', title); 
+            } catch (err) {
+                console.error('Metadata error:', err);
+            }
+        }
+
+        
+        const style = document.createElement('style');
+        style.innerHTML = `.discord-status-dot::after { background: var(--status-color, #747f8d); }`;
+        document.head.appendChild(style);
+
+        
+        const DISCORD_ID = '1123405235398901912';
+
+        const discordAvatar = document.getElementById('discord-avatar');
+        const discordUsername = document.getElementById('discord-username');
+        const discordCustom = document.getElementById('discord-custom');
+        const discordActivity = document.getElementById('discord-activity');
+        const statusDot = document.getElementById('status-dot');
+
+        function updateDiscordStatus(data) {
+            if (!data || !data.discord_user) {
+                discordUsername.textContent = 'Discord offline or unavailable';
+                discordUsername.classList.add('discord-offline');
+                discordAvatar.src = '';
+                statusDot.style.display = 'none';
+                return;
+            }
+
+            const user = data.discord_user;
+            discordAvatar.src = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=128`;
+            discordUsername.textContent = user.global_name || user.username;
+            discordUsername.classList.remove('discord-offline');
+            statusDot.style.display = 'block';
+
+            const status = data.discord_status;
+            let dotColor = '#747f8d';
+            if (status === 'online') dotColor = '#43b581';
+            else if (status === 'idle') dotColor = '#faa61a';
+            else if (status === 'dnd') dotColor = '#f04747';
+            statusDot.style.setProperty('--status-color', dotColor);
+
+            discordCustom.innerHTML = '';
+            if (data.activities) {
+                const custom = data.activities.find(a => a.type === 4);
+                if (custom && custom.state) {
+                    let text = custom.state;
+                    if (custom.emoji && custom.emoji.id) {
+                        text = `<img src="https://cdn.discordapp.com/emojis/${custom.emoji.id}.png" style="width:20px;height:20px;vertical-align:middle;margin-right:4px;">${text}`;
+                    } else if (custom.emoji) {
+                        text = `${custom.emoji.name} ${text}`;
+                    }
+                    discordCustom.innerHTML = text;
+                }
+            }
+
+            discordActivity.innerHTML = '';
+            const activity = data.activities?.find(a => a.type === 0 || (a.name === 'Spotify' && data.listening_to_spotify));
+            if (activity) {
+                let text = '';
+                let img = '';
+
+                if (data.listening_to_spotify && activity.name === 'Spotify') {
+                    text = `Listening to ${activity.details} by ${activity.state}`;
+                    if (activity.assets?.large_image) {
+                        img = `https://i.scdn.co/image/${activity.assets.large_image.split('spotify:')[1]}`;
+                    }
+                } else {
+                    text = `Playing ${activity.name}`;
+                    if (activity.details) text += `: ${activity.details}`;
+                    if (activity.assets?.large_image && activity.application_id) {
+                        img = `https://media.discordapp.net/app-assets/${activity.application_id}/${activity.assets.large_image}.png`;
+                    }
+                }
+
+                if (img) discordActivity.innerHTML += `<img src="${img}" alt="Activity">`;
+                discordActivity.innerHTML += `<span>${text}</span>`;
+            }
+        }
+
+        const ws = new WebSocket('wss://api.lanyard.rest/socket');
+        ws.onopen = () => {
+            ws.send(JSON.stringify({
+                op: 2,
+                d: { subscribe_to_id: DISCORD_ID }
+            }));
+            setInterval(() => ws.send(JSON.stringify({ op: 3 })), 30000);
+        };
+
+        ws.onmessage = (event) => {
+            const msg = JSON.parse(event.data);
+            if (msg.t === 'INIT_STATE' || msg.t === 'PRESENCE_UPDATE') {
+                updateDiscordStatus(msg.d);
+            }
+        };
+
+        fetch(`https://api.lanyard.rest/v1/users/${DISCORD_ID}`)
+            .then(res => res.json())
+            .then(json => updateDiscordStatus(json.data))
+            .catch(() => {
+                discordUsername.textContent = 'Failed to load Discord status';
+            });
+
+        
+        const locationLabel = document.getElementById('location-label');
+        const weatherTab = document.getElementById('weather-tab');
+        const currentWeather = document.getElementById('current-weather');
+        const currentDesc = document.getElementById('current-desc');
+        const weeklyForecast = document.getElementById('weekly-forecast');
+        const backBtn = document.getElementById('back-btn');
+
+        const weatherIcons = {
+            0: '☀️', 1: '🌤️', 2: '⛅', 3: '☁️',
+            45: '🌫️', 48: '🌫️',
+            51: '🌦️', 61: '🌧️', 80: '🌧️',
+            95: '⛈️'
+        };
+
+        const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+        let isLoadingWeather = false;
+        locationLabel.addEventListener('click', async () => {
+            if (isLoadingWeather) return;
+            isLoadingWeather = true;
+            profileBlock.style.opacity = '0';
+            weatherTab.classList.add('visible');
+            currentWeather.textContent = '...';
+            currentDesc.textContent = '';
+            weeklyForecast.innerHTML = '';
+            try {
+                const url = 'https://api.open-meteo.com/v1/forecast?latitude=47.6062&longitude=-122.3321&daily=temperature_2m_max,temperature_2m_min,weather_code&current=temperature_2m,weather_code&temperature_unit=fahrenheit&timezone=America%2FLos_Angeles&forecast_days=7';
+                const res = await fetch(url);
+                const data = await res.json();
+                const currentTempF = Math.round(data.current.temperature_2m);
+                const currentCode = data.current.weather_code;
+                const currentIcon = weatherIcons[currentCode] || '🌡️';
+                const descMap = {0:'Clear',1:'Mainly clear',2:'Partly cloudy',3:'Overcast',45:'Fog',48:'Icy fog',51:'Light drizzle',61:'Rain',80:'Showers',95:'Thunderstorm'};
+                currentWeather.textContent = `${currentIcon} ${currentTempF}°F`;
+                currentDesc.textContent = descMap[currentCode] || '';
+                const dates = data.daily.time;
+                const highs = data.daily.temperature_2m_max;
+                const lows = data.daily.temperature_2m_min;
+                const codes = data.daily.weather_code;
+                dates.forEach((dateStr, i) => {
+                    const date = new Date(dateStr);
+                    const dayName = i === 0 ? 'Today' : dayNames[date.getDay()];
+                    const high = Math.round(highs[i]);
+                    const low = Math.round(lows[i]);
+                    const icon = weatherIcons[codes[i]] || '🌤️';
+                    const dayEl = document.createElement('div');
+                    dayEl.className = 'day-forecast';
+                    const descMap2 = {0:'Clear',1:'Clear',2:'Partly cloudy',3:'Overcast',45:'Fog',48:'Fog',51:'Drizzle',61:'Rain',80:'Showers',95:'Thunder'};
+                    const shortDesc = descMap2[codes[i]] || '';
+                    dayEl.innerHTML = `<span class="day-name">${dayName}</span><span class="day-icon">${icon}</span><span class="day-desc">${shortDesc}</span><span class="day-temps"><span class="day-low">${low}°</span><span class="day-high">${high}°</span></span>`;
+                    weeklyForecast.appendChild(dayEl);
+                });
+            } catch (err) {
+                currentWeather.textContent = 'Failed';
+            } finally {
+                isLoadingWeather = false;
+            }
+        });
+
+        backBtn.addEventListener('click', () => {
+            weatherTab.classList.remove('visible');
+            profileBlock.style.opacity = '1';
+            isLoadingWeather = false;
+        });
+
+        
+        if ('ontouchstart' in window) {
+            document.body.classList.add('touch-device');
+        }
+
+        
+        function updateClock() {
+            const now = new Date();
+            const pst = new Date(now.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' }));
+            let h = pst.getHours();
+            const m = String(pst.getMinutes()).padStart(2, '0');
+            const s = String(pst.getSeconds()).padStart(2, '0');
+            const ampm = h >= 12 ? 'PM' : 'AM';
+            h = h % 12 || 12;
+            document.getElementById('pst-clock').textContent = `${h}:${m}:${s} ${ampm}`;
+        }
+        updateClock();
+        setInterval(updateClock, 1000);
     </script>
 
     <div id="crypto-modal">
@@ -844,7 +1202,179 @@
     </div>
 
     <script>
-        // ... (your crypto modal script remains unchanged) ...
+        
+        let cmChart = null;
+
+        function openCryptoModal(name, id, address, color) {
+            document.getElementById('cm-name').textContent = name;
+            document.getElementById('cm-price').textContent = 'Loading...';
+            document.getElementById('cm-price').style.color = color;
+            document.getElementById('cm-change').textContent = '';
+            document.getElementById('cm-addr').textContent = address;
+
+            const copyBtn = document.getElementById('cm-copy-btn');
+            copyBtn.style.background = color;
+            copyBtn.textContent = 'Copy Address';
+            copyBtn.onclick = () => {
+                navigator.clipboard.writeText(address).then(() => {
+                    copyBtn.textContent = '✓ Copied!';
+                    setTimeout(() => copyBtn.textContent = 'Copy Address', 2000);
+                }).catch(() => {
+                    const ta = document.createElement('textarea');
+                    ta.value = address;
+                    document.body.appendChild(ta);
+                    ta.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(ta);
+                    copyBtn.textContent = '✓ Copied!';
+                    setTimeout(() => copyBtn.textContent = 'Copy Address', 2000);
+                });
+            };
+
+            if (cmChart) { cmChart.destroy(); cmChart = null; }
+            document.getElementById('crypto-modal').classList.add('active');
+
+            
+            const krakenPairs = { bitcoin: 'XBTUSD', litecoin: 'LTCUSD', ethereum: 'ETHUSD', solana: 'SOLUSD' };
+
+            async function fetchPrice() {
+                
+                try {
+                    const r = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${id}&vs_currencies=usd&include_24hr_change=true`);
+                    if (!r.ok) throw new Error('rate limited');
+                    const data = await r.json();
+                    const price = data[id]?.usd;
+                    const change = data[id]?.usd_24h_change;
+                    if (!price) throw new Error('no price');
+                    document.getElementById('cm-price').textContent = '$' + price.toLocaleString('en-US', { minimumFractionDigits: 2 });
+                    if (change !== undefined) {
+                        const el = document.getElementById('cm-change');
+                        el.textContent = (change >= 0 ? '▲ ' : '▼ ') + Math.abs(change).toFixed(2) + '% (24h)';
+                        el.style.color = change >= 0 ? '#4cff91' : '#ff5e5e';
+                    }
+                    return;
+                } catch(_) {}
+                
+                try {
+                    const pair = krakenPairs[id];
+                    const r = await fetch(`https://api.kraken.com/0/public/Ticker?pair=${pair}`);
+                    if (!r.ok) throw new Error('kraken error');
+                    const data = await r.json();
+                    const result = data.result[Object.keys(data.result)[0]];
+                    const price = parseFloat(result.c[0]);
+                    const open = parseFloat(result.o);
+                    const change = ((price - open) / open) * 100;
+                    document.getElementById('cm-price').textContent = '$' + price.toLocaleString('en-US', { minimumFractionDigits: 2 });
+                    const el = document.getElementById('cm-change');
+                    el.textContent = (change >= 0 ? '▲ ' : '▼ ') + Math.abs(change).toFixed(2) + '% (24h)';
+                    el.style.color = change >= 0 ? '#4cff91' : '#ff5e5e';
+                } catch(_) {
+                    document.getElementById('cm-price').textContent = 'Unavailable';
+                }
+            }
+            fetchPrice();
+
+            
+            const krakenOHLC = { bitcoin: 'XBTUSD', litecoin: 'LTCUSD', ethereum: 'ETHUSD', solana: 'SOLUSD' };
+
+            async function fetchChart() {
+                let labels = [], prices = [];
+
+                
+                try {
+                    const r = await fetch(`https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=usd&days=7`);
+                    if (!r.ok) throw new Error('rate limited');
+                    const data = await r.json();
+                    if (!data.prices?.length) throw new Error('no data');
+                    labels = data.prices.map(p => new Date(p[0]).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+                    prices = data.prices.map(p => p[1]);
+                } catch(_) {
+                    
+                    try {
+                        const pair = krakenOHLC[id];
+                        const since = Math.floor(Date.now() / 1000) - 7 * 24 * 3600;
+                        const r = await fetch(`https://api.kraken.com/0/public/OHLC?pair=${pair}&interval=1440&since=${since}`);
+                        if (!r.ok) throw new Error('kraken chart error');
+                        const data = await r.json();
+                        const candles = data.result[Object.keys(data.result)[0]];
+                        labels = candles.map(c => new Date(c[0] * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+                        prices = candles.map(c => parseFloat(c[4])); 
+                    } catch(_) { return; }
+                }
+
+                const hex = color.replace('#','');
+                const rv = parseInt(hex.slice(0,2),16);
+                const gv = parseInt(hex.slice(2,4),16);
+                const bv = parseInt(hex.slice(4,6),16);
+
+                const ctx = document.getElementById('cm-chart').getContext('2d');
+                const grad = ctx.createLinearGradient(0, 0, 0, 200);
+                grad.addColorStop(0, `rgba(${rv},${gv},${bv},0.4)`);
+                grad.addColorStop(1, `rgba(${rv},${gv},${bv},0.02)`);
+
+                cmChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels,
+                        datasets: [{
+                            data: prices,
+                            borderColor: color,
+                            backgroundColor: grad,
+                            borderWidth: 2.5,
+                            tension: 0.4,
+                            fill: true,
+                            pointRadius: 0,
+                            pointHoverRadius: 4,
+                            pointHoverBackgroundColor: color
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: { mode: 'index', intersect: false },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: 'rgba(0,0,0,0.8)',
+                                titleColor: color,
+                                bodyColor: '#fff',
+                                padding: 8,
+                                callbacks: {
+                                    label: ctx => '$' + ctx.parsed.y.toLocaleString('en-US', { minimumFractionDigits: 2 })
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: { display: false },
+                                ticks: { color: 'rgba(255,255,255,0.45)', maxTicksLimit: 7 }
+                            },
+                            y: {
+                                grid: { color: 'rgba(255,255,255,0.06)' },
+                                ticks: {
+                                    color: 'rgba(255,255,255,0.55)',
+                                    callback: v => '$' + (v >= 1000 ? (v/1000).toFixed(1)+'k' : v.toFixed(0))
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            fetchChart();
+        }
+
+        function closeCryptoModal() {
+            document.getElementById('crypto-modal').classList.remove('active');
+            if (cmChart) { cmChart.destroy(); cmChart = null; }
+        }
+
+        document.getElementById('crypto-modal').addEventListener('click', e => {
+            if (e.target.id === 'crypto-modal') closeCryptoModal();
+        });
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') closeCryptoModal();
+        });
     </script>
 
 </body>
