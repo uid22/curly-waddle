@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="color-scheme" content="dark light">
     <title>Iayx Profile</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500&family=Poppins:wght@400;500&display=swap" rel="stylesheet">
@@ -32,11 +31,6 @@
             --transition-fast: 0.3s ease;
             --transition-slow: 1s ease-in-out;
         }
-
-        html {
-            color-scheme: dark;
-        }
-
         * {
             margin: 0;
             padding: 0;
@@ -110,15 +104,6 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            image-rendering: crisp-edges;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-        
-        img {
-            image-rendering: -webkit-optimize-contrast;
-            image-rendering: crisp-edges;
-            max-width: 100%;
         }
         
         #background-video {
@@ -340,7 +325,6 @@
             width: 2.2rem;
             height: 2.2rem;
             transition: transform var(--transition-fast);
-            filter: brightness(1) contrast(1) saturate(1.05);
         }
         .social-button:hover {
             transform: scale(1.08);
@@ -1133,7 +1117,10 @@
 
         const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
+        let isLoadingWeather = false;
         locationLabel.addEventListener('click', async () => {
+            if (isLoadingWeather) return;
+            isLoadingWeather = true;
             profileBlock.style.opacity = '0';
             weatherTab.classList.add('visible');
             currentWeather.textContent = '...';
@@ -1168,12 +1155,15 @@
                 });
             } catch (err) {
                 currentWeather.textContent = 'Failed';
+            } finally {
+                isLoadingWeather = false;
             }
         });
 
         backBtn.addEventListener('click', () => {
             weatherTab.classList.remove('visible');
             profileBlock.style.opacity = '1';
+            isLoadingWeather = false;
         });
 
         
@@ -1195,7 +1185,7 @@
         updateClock();
         setInterval(updateClock, 1000);
     </script>
-    
+
     <div id="crypto-modal">
         <div class="crypto-modal-box">
             <button class="crypto-modal-close" onclick="closeCryptoModal()">×</button>
@@ -1339,8 +1329,8 @@
                         }]
                     },
                     options: {
-                        responsive: true;
-                        maintainAspectRatio: false;
+                        responsive: true,
+                        maintainAspectRatio: false,
                         interaction: { mode: 'index', intersect: false },
                         plugins: {
                             legend: { display: false },
