@@ -6,7 +6,8 @@
     <title>Iayx Profile</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500&family=Poppins:wght@400;500&display=swap" rel="stylesheet">
-    <!-- music-metadata-browser CDN for reading MP3 title -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     <script type="module" src="https://cdn.jsdelivr.net/npm/music-metadata-browser@2.5.10/dist/index.min.js"></script>
     <style>
         :root {
@@ -36,7 +37,7 @@
             box-sizing: border-box;
             font-family: 'Inter', sans-serif;
         }
-        /* Black Screen with Click to Enter */
+        
         #intro-screen {
             position: fixed;
             top: 0;
@@ -78,7 +79,7 @@
             transform: scale(1.05);
         }
 
-        /* Snowflakes */
+        
         .snowflake {
             position: fixed;
             pointer-events: none;
@@ -104,7 +105,7 @@
             align-items: center;
             min-height: 100vh;
         }
-        /* Background Video - FULL BRIGHTNESS + OVERLAY */
+        
         #background-video {
             position: fixed;
             top: 0;
@@ -120,7 +121,7 @@
             opacity: 1;
         }
 
-        /* Dark overlay for readability */
+        
         #video-overlay {
             position: fixed;
             top: 0;
@@ -137,100 +138,134 @@
             opacity: 1;
         }
 
-        /* SIZED DOWN PROFILE BLOCK */
+        
         #profile-block {
             position: fixed;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%) perspective(1200px);
-            width: 44rem;
-            min-height: 20.75rem;
-            background: linear-gradient(135deg, var(--glass-bg-start), var(--glass-bg-end));
-            border: 1px solid var(--border-color);
-            padding: var(--spacing-large);
-            border-radius: 1.25rem;
-            z-index: 20;
+            transform: translate(-50%, -50%);
             display: flex;
-            flex-direction: column;
-            gap: var(--spacing-medium);
-            backdrop-filter: blur(0.9375rem);
-            transition: opacity var(--transition-slow), box-shadow var(--transition-fast);
-            pointer-events: auto;
+            flex-direction: row;
+            align-items: stretch;
+            gap: 0;
+            z-index: 20;
             opacity: 0;
             visibility: hidden;
-            box-shadow: 0 0.25rem 1.875rem var(--shadow-color);
+            transition: opacity var(--transition-slow);
+            pointer-events: auto;
+            background: linear-gradient(135deg, rgba(0,0,0,0.82), rgba(12,12,12,0.82));
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 1.25rem;
+            backdrop-filter: blur(0.9375rem);
+            box-shadow: 0 0.25rem 2rem rgba(0,0,0,0.5);
             overflow: hidden;
         }
         #profile-block.visible {
             opacity: 1;
             visibility: visible;
         }
-        #profile-block::before {
+
+        
+        #left-card {
+            background: transparent;
+            border: none;
+            border-right: 1px solid rgba(255,255,255,0.08);
+            border-radius: 0;
+            padding: 1.5rem 1.25rem;
+            width: 13rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .profile-container {
+            display: none;
+        }
+        .discord-avatar-container {
+            position: relative;
+            width: 7rem;
+            height: 7rem;
+        }
+        .discord-avatar {
+            width: 7rem;
+            height: 7rem;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .discord-status-dot {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            width: 22px;
+            height: 22px;
+            background: #fff;
+            border-radius: 50%;
+            border: 3px solid #111;
+            box-sizing: border-box;
+        }
+        .discord-status-dot::after {
             content: '';
             position: absolute;
-            inset: 0;
-            border-radius: 1.25rem;
-            padding: 1px;
-            background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity var(--transition-fast);
+            inset: 3px;
+            background: var(--status-color, #747f8d);
+            border-radius: 50%;
+            transition: background 0.3s ease;
         }
-        #profile-block:hover::before {
-            opacity: 1;
+        #left-card .discord-username {
+            color: white;
+            font-size: 1.05rem;
+            font-weight: 700;
+            text-align: center;
         }
-        #profile-block:hover {
-            box-shadow: 0 0 2.5rem rgba(255, 255, 255, 0.25);
+        #left-card .discord-custom-status {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.8rem;
+            text-align: center;
         }
-
-        /* Location label - almost flush with the white line */
+        #left-card .discord-activity {
+            color: rgba(255,255,255,0.75);
+            font-size: 0.8rem;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        #left-card .discord-activity img {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+        }
+        .discord-offline {
+            color: rgba(255,255,255,0.4);
+            font-style: italic;
+        }
         .location-label {
-            position: absolute;
-            bottom: 0.15rem; /* Extremely close to the separator line */
-            right: var(--spacing-medium);
-            color: var(--secondary-color);
-            font-size: 1rem;
+            color: rgba(255,255,255,0.45);
+            font-size: 0.78rem;
             cursor: pointer;
             transition: var(--transition-fast);
-            z-index: 30;
+            text-align: center;
         }
         .location-label:hover {
             color: var(--primary-color);
             text-shadow: 0 0 0.5rem var(--glow-color);
         }
-
-        .profile-header {
-            position: relative;
-            display: flex;
-            align-items: flex-start;
-            gap: var(--spacing-medium);
-            padding-bottom: 1.75rem; /* Enough space so the label sits just above the line */
-        }
-        .profile-container {
-            position: relative;
-            width: 8.75rem;
-            height: 8.75rem;
-            overflow: hidden;
-            border-radius: 50%;
-        }
-        .profile-picture {
+        .left-divider {
             width: 100%;
-            height: 100%;
-            object-fit: cover;
-            cursor: pointer;
-            transition: transform var(--transition-fast), filter var(--transition-fast);
+            height: 1px;
+            background: rgba(255,255,255,0.1);
         }
-        .profile-picture:hover {
-            transform: scale(1.05);
-            filter: brightness(1.1);
-        }
-        .profile-info {
-            flex: 1;
+
+        
+        #right-side {
             display: flex;
             flex-direction: column;
+            gap: 1rem;
+            width: 22rem;
+            background: transparent;
+            border: none;
+            padding: 1.5rem;
         }
         .name-with-badge {
             display: flex;
@@ -238,113 +273,69 @@
             gap: 0.5rem;
         }
         #profile-name {
-            font-size: var(--font-size-medium);
+            font-size: 3rem;
             font-weight: 700;
             letter-spacing: 0.0625rem;
             color: var(--primary-color);
             filter: drop-shadow(0 0 0.5rem var(--glow-color));
-            text-shadow: 0 0 0.3125rem rgba(255, 255, 255, 0.4), 0 0 0.625rem rgba(255, 255, 255, 0.2);
+            text-shadow: 0 0 0.3125rem rgba(255,255,255,0.4), 0 0 0.625rem rgba(255,255,255,0.2);
             position: relative;
             cursor: pointer;
+            line-height: 1;
         }
-        #profile-name:hover::after {
-            content: "ID 1";
-            position: absolute;
-            top: -2rem;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.25rem;
-            font-size: 0.875rem;
-            font-weight: 600;
-            white-space: nowrap;
-            z-index: 10;
-            opacity: 1;
-            transition: opacity 0.3s ease;
-        }
-        .owner-badge, .premium-badge {
-            width: 2rem;
-            height: 2rem;
-            border-radius: 50%;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.4s ease;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            color: white;
-        }
-        .owner-badge { background: var(--orange-color); }
-        .owner-badge::before { content: "O"; font-size: 1rem; font-weight: 700; }
-        .owner-badge:hover { border-radius: 0.5rem; width: auto; padding: 0.25rem 0.75rem; }
-        .owner-badge:hover::before { content: "owner"; font-size: 0.75rem; font-weight: 600; }
-
-        .premium-badge { background: var(--premium-color); }
-        .premium-badge::before { content: "★"; font-size: 1rem; font-weight: 700; }
-        .premium-badge:hover { border-radius: 0.5rem; width: auto; padding: 0.25rem 0.75rem; }
-        .premium-badge:hover::before { content: "premium"; font-size: 0.75rem; font-weight: 600; }
 
         #profile-bio {
             color: var(--secondary-color);
-            font-size: 1.125rem;
+            font-size: 1rem;
             line-height: 1.6;
-            margin: var(--spacing-small) 0;
             white-space: nowrap;
             overflow: hidden;
             border-right: 2px solid var(--primary-color);
             width: fit-content;
+            min-height: 1.6em;
+            display: block;
         }
-        .bio-separator {
-            width: 100%;
-            height: 1px;
-            background: rgba(255, 255, 255, 0.15);
-            margin: var(--spacing-medium) 0;
-        }
-        .profile-footer {
-            display: flex;
-            flex-direction: column;
-            gap: var(--spacing-small);
-            width: 100%;
-            margin-top: auto;
-        }
+
+        .bio-separator { display: none; }
+        .profile-footer { display: contents; }
+
         .social-links {
             display: flex;
-            justify-content: center;
-            gap: 1rem;
+            justify-content: flex-start;
+            gap: 0.75rem;
             pointer-events: auto;
         }
         .social-button {
-            width: 2.5rem;
-            height: 2.5rem;
-            border-radius: 50%;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            width: 4.5rem;
+            height: 4.5rem;
+            border-radius: 0.9rem;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
             border: 1px solid var(--border-color);
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
+            gap: 0.2rem;
             transition: all var(--transition-fast);
-            filter: drop-shadow(0 0 0.5rem var(--glow-color));
             cursor: pointer;
             pointer-events: auto;
+            backdrop-filter: blur(10px);
         }
         .social-button img {
-            width: 1.5rem;
-            height: 1.5rem;
+            width: 2.2rem;
+            height: 2.2rem;
             transition: transform var(--transition-fast);
         }
         .social-button:hover {
-            transform: scale(1.1);
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
-            border-color: rgba(255, 255, 255, 0.3);
+            transform: scale(1.08);
+            background: linear-gradient(135deg, rgba(255,255,255,0.18), rgba(255,255,255,0.08));
+            border-color: rgba(255,255,255,0.3);
         }
-        .social-button:hover img {
-            transform: rotate(10deg);
-        }
-        /* Notification */
+        .social-button:hover img { transform: scale(1.1); }
+
+        
+        .discord-container { display: none; }
+        
         .notification {
             position: fixed;
             bottom: 1.25rem;
@@ -365,7 +356,7 @@
             opacity: 1;
             transform: translateY(0);
         }
-        /* Volume Control */
+        
         .volume-control {
             position: fixed;
             top: var(--spacing-medium);
@@ -374,6 +365,13 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            opacity: 0;
+            transition: opacity 1.2s ease-out;
+            pointer-events: none;
+        }
+        .volume-control.visible {
+            opacity: 1;
+            pointer-events: auto;
         }
         .volume-btn {
             background: rgba(255, 255, 255, 0.1);
@@ -424,117 +422,8 @@
             cursor: pointer;
             box-shadow: 0 0 0.625rem rgba(88, 101, 242, 0.5);
         }
-        /* Like/Dislike System */
-        .feedback-control {
-            position: fixed;
-            bottom: var(--spacing-medium);
-            left: var(--spacing-medium);
-            z-index: 50;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 0.5rem 1rem;
-            border-radius: 2rem;
-            border: 1px solid var(--border-color);
-            backdrop-filter: blur(0.625rem);
-        }
-        .feedback-btn {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 0.5rem 1rem;
-            border-radius: 2rem;
-            cursor: pointer;
-            transition: all var(--transition-fast);
-        }
-        .feedback-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-0.25rem);
-        }
-        .feedback-btn.active-like {
-            background: rgba(0, 255, 0, 0.2);
-            border: 1px solid rgba(0, 255, 0, 0.3);
-        }
-        .feedback-btn.active-dislike {
-            background: rgba(255, 0, 0, 0.2);
-            border: 1px solid rgba(255, 0, 0, 0.3);
-        }
-        .feedback-btn img {
-            width: 1.5rem;
-            height: 1.5rem;
-        }
-        .feedback-count {
-            font-weight: 600;
-            min-width: 1.5rem;
-            text-align: center;
-        }
 
-        /* SONG DISPLAYER */
-        .song-container {
-            width: 100%;
-            margin-top: 1rem;
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 1rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .song {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            width: 100%;
-        }
-        .songcover {
-            width: 100px;
-            height: 100px;
-            border-radius: 10px;
-            object-fit: cover;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-        }
-        .songinfo {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-        .songtitle {
-            color: white;
-            font-family: 'Rubik', sans-serif;
-            font-size: 1.1rem;
-            font-weight: 500;
-            margin: 4px 0;
-            text-align: left;
-        }
-        .progress-bar-container {
-            width: 80%;
-            height: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            margin: 1rem 0;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        .progress-bar {
-            height: 100%;
-            background-color: #fff;
-            width: 0%;
-            transition: width 0.1s ease;
-            border-radius: 10px;
-        }
-        .time-label {
-            color: white;
-            font-family: 'Poppins', sans-serif;
-            font-size: 0.9rem;
-            opacity: 0.8;
-        }
-
-        /* DISCORD STATUS CARD */
+        
         .discord-container {
             width: 100%;
             margin-top: 1.5rem;
@@ -614,90 +503,237 @@
             font-style: italic;
         }
 
-        /* Weather Tab - Apple Weather Style */
         #weather-tab {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 44rem;
-            max-width: 90%;
-            background: linear-gradient(135deg, var(--glass-bg-start), var(--glass-bg-end));
-            border: 1px solid var(--border-color);
-            padding: var(--spacing-large);
+            width: 38rem;
+            max-width: 92%;
+            background: linear-gradient(135deg, rgba(0,0,0,0.88), rgba(10,10,10,0.88));
+            border: 1px solid rgba(255,255,255,0.1);
             border-radius: 1.25rem;
             z-index: 25;
-            backdrop-filter: blur(0.9375rem);
+            backdrop-filter: blur(1.2rem);
+            box-shadow: 0 0 3rem rgba(0,0,0,0.6);
             opacity: 0;
             visibility: hidden;
             transition: opacity var(--transition-slow);
-            text-align: center;
             color: var(--primary-color);
-            overflow-y: auto;
-            max-height: 90vh;
+            overflow: hidden;
+            animation: weatherPop 0.4s ease-out;
+        }
+        @keyframes weatherPop {
+            from { transform: translate(-50%, -50%) scale(0.94); opacity: 0; }
+            to   { transform: translate(-50%, -50%) scale(1);    opacity: 1; }
         }
         #weather-tab.visible {
             opacity: 1;
             visibility: visible;
         }
-        #weather-tab h2 {
-            font-size: 1.8rem;
-            margin-bottom: 1rem;
+        #weather-header {
+            padding: 1.5rem 1.75rem 1.2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+        }
+        #weather-location-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgba(255,255,255,0.4);
+            margin-bottom: 0.3rem;
         }
         #current-weather {
-            font-size: 3rem;
-            margin: 1rem 0;
+            font-size: 4rem;
+            font-weight: 700;
+            line-height: 1;
+            letter-spacing: -0.02em;
         }
         #current-desc {
-            font-size: 1.4rem;
-            margin-bottom: 2rem;
-            opacity: 0.9;
+            font-size: 0.95rem;
+            color: rgba(255,255,255,0.55);
+            margin-top: 0.4rem;
+            text-transform: capitalize;
+        }
+        #weather-body {
+            padding: 1.2rem 1.75rem 1.5rem;
+            overflow-y: auto;
+            max-height: 55vh;
         }
         .weekly-forecast {
             display: flex;
             flex-direction: column;
-            gap: 1rem;
+            gap: 0.3rem;
         }
         .day-forecast {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 0.75rem 1rem;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 1rem;
-            font-size: 1.2rem;
+            padding: 0.6rem 0.85rem;
+            border-radius: 0.75rem;
+            transition: background 0.2s;
+        }
+        .day-forecast:hover {
+            background: rgba(255,255,255,0.04);
         }
         .day-name {
-            width: 80px;
-            text-align: left;
+            width: 4rem;
+            font-size: 0.95rem;
+            color: rgba(255,255,255,0.85);
+            font-weight: 500;
         }
         .day-icon {
-            font-size: 1.8rem;
-            width: 50px;
+            font-size: 1.4rem;
+            width: 2.2rem;
             text-align: center;
+        }
+        .day-bar-wrap {
+            flex: 1;
+            margin: 0 0.75rem;
+            height: 4px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .day-bar {
+            height: 100%;
+            border-radius: 2px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.25), rgba(255,255,255,0.7));
         }
         .day-temps {
             display: flex;
-            gap: 1rem;
+            gap: 0.6rem;
+            font-size: 0.9rem;
+            min-width: 5rem;
+            justify-content: flex-end;
         }
         .day-low {
-            opacity: 0.7;
+            color: rgba(255,255,255,0.35);
+        }
+        .day-high {
+            color: rgba(255,255,255,0.9);
+            font-weight: 600;
+        }
+        #weather-footer {
+            padding: 0.9rem 1.75rem;
+            border-top: 1px solid rgba(255,255,255,0.07);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
         .back-btn {
-            margin-top: 2rem;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid var(--border-color);
-            color: var(--primary-color);
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.75rem;
+            background: none;
+            border: 1px solid rgba(255,255,255,0.15);
+            color: rgba(255,255,255,0.6);
+            padding: 0.5rem 1.1rem;
+            border-radius: 0.6rem;
             cursor: pointer;
-            font-size: 1rem;
-            transition: var(--transition-fast);
+            font-size: 0.85rem;
+            transition: all 0.2s;
         }
         .back-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: scale(1.05);
+            background: rgba(255,255,255,0.07);
+            color: white;
+            border-color: rgba(255,255,255,0.3);
         }
+        #weather-updated {
+            font-size: 0.72rem;
+            color: rgba(255,255,255,0.25);
+        }
+
+        
+        #crypto-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.75);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+        #crypto-modal.active {
+            display: flex;
+        }
+        .crypto-modal-box {
+            background: linear-gradient(135deg, rgba(0,0,0,0.9), rgba(20,20,20,0.95));
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 1.25rem;
+            padding: 2rem;
+            width: 92%;
+            max-width: 500px;
+            position: relative;
+            animation: cryptoPop 0.35s ease-out;
+            box-shadow: 0 0 50px rgba(0,0,0,0.7);
+        }
+        @keyframes cryptoPop {
+            from { transform: scale(0.88); opacity: 0; }
+            to   { transform: scale(1);   opacity: 1; }
+        }
+        .crypto-modal-close {
+            position: absolute;
+            top: 1rem; right: 1.2rem;
+            font-size: 1.6rem;
+            color: rgba(255,255,255,0.6);
+            cursor: pointer;
+            transition: color 0.2s, transform 0.2s;
+            background: none;
+            border: none;
+            line-height: 1;
+        }
+        .crypto-modal-close:hover { color: #fff; transform: rotate(90deg); }
+        .crypto-modal-name {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 0.25rem;
+        }
+        .crypto-modal-price {
+            text-align: center;
+            font-size: 2.4rem;
+            font-weight: 700;
+            margin: 0.4rem 0 0.2rem;
+        }
+        .crypto-modal-change {
+            text-align: center;
+            font-size: 1rem;
+            margin-bottom: 1.2rem;
+            opacity: 0.85;
+        }
+        .crypto-modal-chart {
+            height: 200px;
+            margin-bottom: 1.4rem;
+        }
+        .crypto-modal-addr-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: rgba(255,255,255,0.45);
+            margin-bottom: 0.4rem;
+        }
+        .crypto-modal-addr {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 0.7rem;
+            padding: 0.8rem 1rem;
+            font-family: monospace;
+            font-size: 0.9rem;
+            word-break: break-all;
+            color: rgba(255,255,255,0.85);
+            margin-bottom: 0.8rem;
+        }
+        .crypto-modal-copy {
+            display: block;
+            width: 100%;
+            padding: 0.7rem;
+            border: none;
+            border-radius: 0.7rem;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: filter 0.2s, transform 0.2s;
+            color: #fff;
+        }
+        .crypto-modal-copy:hover { filter: brightness(1.15); transform: translateY(-1px); }
 
         @media (max-width: 430px) {
             #profile-block {
@@ -735,88 +771,87 @@
     </audio>
 
     <div id="profile-block">
-        <div class="profile-header">
-            <div class="location-label" id="location-label">𖡡 Washington State</div>
-            <div class="profile-container">
-                <img src="ProfilePicture.jpg" alt="Profile" class="profile-picture">
+
+        
+        <div id="left-card">
+            <div class="discord-avatar-container">
+                <img id="discord-avatar" src="" alt="Discord Avatar" class="discord-avatar">
+                <div class="discord-status-dot" id="status-dot"></div>
             </div>
-            <div class="profile-info">
+            <div class="left-divider"></div>
+            <div id="discord-username" class="discord-username">Loading...</div>
+            <div id="discord-custom" class="discord-custom-status"></div>
+            <div id="discord-activity" class="discord-activity"></div>
+<div class="left-divider"></div>
+            <div class="location-label" id="location-label">𖡡 Washington State</div>
+            <div id="pst-clock" style="color:rgba(255,255,255,0.5);font-size:0.82rem;text-align:center;letter-spacing:0.03em;font-variant-numeric:tabular-nums;"></div>
+        </div>
+
+        
+        <div id="right-side">
+            <div>
                 <div class="name-with-badge">
                     <div id="profile-name">Iayx</div>
-                    <span class="owner-badge"></span>
-                    <span class="premium-badge"></span>
                 </div>
                 <div id="profile-bio"></div>
             </div>
-        </div>
-        <div class="bio-separator"></div>
-        <div class="profile-footer">
+
+            
+            <div style="padding:0.8rem 1rem; background:rgba(255,255,255,0.05); border-radius:1rem; border:1px solid rgba(255,255,255,0.1); backdrop-filter:blur(10px); display:flex; align-items:center; justify-content:space-between; gap:0.8rem;">
+                <div style="display:flex; align-items:center; gap:0.8rem; min-width:0; flex:1;">
+                    <img src="ServerLogo.png" alt="Oblivion Server" style="width:44px; height:44px; border-radius:50%; object-fit:cover; border:2px solid rgba(255,255,255,0.15); flex-shrink:0;">
+                    <div style="color:white; font-size:1.05rem; font-weight:600; font-family:'Rubik', sans-serif; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Oblivion</div>
+                </div>
+                <a href="https://discord.gg/MxmB8jfRtZ" target="_blank" style="display:inline-block; background:#43b581; color:white; font-weight:600; padding:0.5rem 1.2rem; border-radius:9999px; text-decoration:none; font-size:0.9rem; white-space:nowrap; flex-shrink:0; box-shadow:0 2px 8px rgba(67,181,129,0.3);">Join</a>
+            </div>
+
+            
             <div class="social-links">
-                <button onclick="copyToClipboard('bc1q7urjtd2naxmajcvylmmz5clqyc3mfmvauw9kmt', 'Bitcoin')" class="social-button">
+                <button onclick="openCryptoModal('Bitcoin','bitcoin','bc1q7urjtd2naxmajcvylmmz5clqyc3mfmvauw9kmt','#F7931A')" class="social-button">
                     <img src="bitcoin (1).png" alt="Bitcoin">
                 </button>
-                <button onclick="copyToClipboard('Lb5718yTJaK1wPkMd33USucPyN13kMtrGY', 'Litecoin')" class="social-button">
-                    <img src="litecoin (1).png" alt="Litecoin">
-                </button>
-                <button onclick="copyToClipboard('0xdaB1b433BD3AeB1ADbAA5724B9cC05EAf047be46', 'Ethereum')" class="social-button">
+                <button onclick="openCryptoModal('Ethereum','ethereum','0xdaB1b433BD3AeB1ADbAA5724B9cC05EAf047be46','#627EEA')" class="social-button">
                     <img src="ethereum (3).png" alt="Ethereum">
                 </button>
-                <button onclick="copyToClipboard('9QNvBo7uwd3AfwxM7Dfc3Ufm4ML6TG2gtHH7GSnNjnih', 'Solana')" class="social-button">
+                <button onclick="openCryptoModal('Solana','solana','9QNvBo7uwd3AfwxM7Dfc3Ufm4ML6TG2gtHH7GSnNjnih','#9945FF')" class="social-button">
                     <img src="solana.png" alt="Solana">
                 </button>
+                <button onclick="openCryptoModal('Litecoin','litecoin','Lb5718yTJaK1wPkMd33USucPyN13kMtrGY','#A6A9AA')" class="social-button">
+                    <img src="litecoin (1).png" alt="Litecoin">
+                </button>
             </div>
-
-            <div class="song-container">
-                <div class="song">
-                    <img src="SongImage.png" alt="Song Cover" class="songcover">
-                    <div class="songinfo">
-                        <div class="songtitle" id="song-title">Loading title...</div>
-                    </div>
-                </div>
-                <div class="progress-bar-container">
-                    <div class="progress-bar" id="progress-bar"></div>
-                </div>
-                <div class="time-label" id="time-label">0:00 / 0:00</div>
-            </div>
-
-            <div class="discord-container">
-                <div class="discord-status">
-                    <div class="discord-avatar-container">
-                        <img id="discord-avatar" src="" alt="Discord Avatar" class="discord-avatar">
-                        <div class="discord-status-dot" id="status-dot"></div>
-                    </div>
-                    <div class="discord-info">
-                        <div id="discord-username" class="discord-username">Loading Discord status...</div>
-                        <div id="discord-custom" class="discord-custom-status"></div>
-                        <div id="discord-activity" class="discord-activity"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- STATIC DISCORD SERVER SECTION -->
-            <div style="width:100%; margin-top:1rem; padding:0.8rem 1rem; background:rgba(255,255,255,0.05); border-radius:1rem; border:1px solid rgba(255,255,255,0.1); backdrop-filter:blur(10px); display:flex; align-items:center; justify-content:space-between; gap:0.8rem; flex-wrap:wrap;">
-                <div style="display:flex; align-items:center; gap:0.8rem; min-width:0; flex:1;">
-                    <img src="ServerLogo.png" alt="Oblivion Server" style="width:48px; height:48px; border-radius:50%; object-fit:cover; border:2px solid rgba(255,255,255,0.15); flex-shrink:0;">
-                    <div style="min-width:0; flex:1;">
-                        <div style="color:white; font-size:1.15rem; font-weight:600; font-family:'Rubik', sans-serif; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Oblivion</div>
-                    </div>
-                </div>
-                <a href="https://discord.gg/MxmB8jfRtZ" target="_blank" style="display:inline-block; background:#43b581; color:white; font-weight:600; padding:0.55rem 1.4rem; border-radius:9999px; text-decoration:none; transition:all 0.3s ease; font-size:0.95rem; white-space:nowrap; border:none; cursor:pointer; box-shadow:0 2px 8px rgba(67,181,129,0.3);">Join</a>
-            </div>
-
         </div>
+
+        
+        <div class="discord-container" style="display:none;">
+            <div class="discord-status"></div>
+        </div>
+        <div class="bio-separator"></div>
+        <div class="profile-footer"></div>
+        <div class="profile-header" style="display:none;">
+            <div class="profile-container"><img src="ProfilePicture.jpg" alt="Profile" class="profile-picture"></div>
+            <div class="profile-info"></div>
+        </div>
+
     </div>
 
-    <!-- Weather Tab -->
     <div id="weather-tab">
-        <h2>Weather in Washington State</h2>
-        <div id="current-weather">Loading...</div>
-        <div id="current-desc"></div>
-        <div class="weekly-forecast" id="weekly-forecast"></div>
-        <button class="back-btn" id="back-btn">← Back to Profile</button>
+        <div id="weather-header">
+            <div id="weather-location-title">Washington State</div>
+            <div id="current-weather">--</div>
+            <div id="current-desc"></div>
+        </div>
+        <div id="weather-body">
+            <div class="weekly-forecast" id="weekly-forecast"></div>
+        </div>
+        <div id="weather-footer">
+            <button class="back-btn" id="back-btn">← Back</button>
+            <div id="weather-updated"></div>
+        </div>
     </div>
 
     <div id="notification" class="notification"></div>
+
     <div id="volume-control" class="volume-control">
         <button id="volume-btn" class="volume-btn">
             <img src="Soundicon.jpg" alt="Volume">
@@ -825,24 +860,15 @@
             <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="1">
         </div>
     </div>
-    <div class="feedback-control">
-        <div id="like-btn" class="feedback-btn">
-            <img src="Likeicon.jpg" alt="Like">
-            <div id="like-count" class="feedback-count">138</div>
-        </div>
-        <div id="dislike-btn" class="feedback-btn">
-            <img src="Dislikeicon.jpg" alt="Dislike">
-            <div id="dislike-count" class="feedback-count">23</div>
-        </div>
-    </div>
 
     <script>
-        // Handle Intro Screen and Audio
+        
         const introScreen = document.getElementById('intro-screen');
         const profileBlock = document.getElementById('profile-block');
         const backgroundVideo = document.getElementById('background-video');
         const audio = document.getElementById('background-audio');
         const notification = document.getElementById('notification');
+        const volumeControl = document.getElementById('volume-control');
 
         let hasEntered = false;
 
@@ -851,9 +877,8 @@
             hasEntered = true;
 
             introScreen.classList.add('hidden');
-            profileBlock.classList.add('visible');
-            backgroundVideo.classList.add('visible');
 
+            backgroundVideo.classList.add('visible');
             audio.muted = false;
             audio.volume = 1.0;
             audio.play().catch((error) => {
@@ -864,38 +889,46 @@
             });
 
             loadMetadata();
+
+            
+            setTimeout(() => {
+                profileBlock.classList.add('visible');
+                volumeControl.classList.add('visible');
+            }, 3300);
         }, { once: true });
 
-        // Typewriter Effect
-        const bioElement = document.getElementById('profile-bio');
-        const phrases = ['locked in', 'I love gambling', 'passion project'];
-        let currentPhrase = 0;
-        let isDeleting = false;
-        let text = '';
-        let i = 0;
-        function type() {
-            const fullText = phrases[currentPhrase];
-            if (isDeleting) {
-                text = fullText.substring(0, i--);
-            } else {
-                text = fullText.substring(0, i++);
+        
+        function makeTypewriter(elementId, phrases, typeSpeed, deleteSpeed, pauseAfterType, pauseAfterDelete) {
+            const el = document.getElementById(elementId);
+            let phraseIdx = 0, charIdx = 0, deleting = false;
+            function tick() {
+                const full = phrases[phraseIdx];
+                if (!deleting) {
+                    charIdx++;
+                    el.textContent = full.substring(0, charIdx);
+                    if (charIdx >= full.length) {
+                        deleting = true;
+                        setTimeout(tick, pauseAfterType);
+                        return;
+                    }
+                } else {
+                    charIdx--;
+                    el.textContent = full.substring(0, charIdx);
+                    if (charIdx <= 0) {
+                        deleting = false;
+                        phraseIdx = (phraseIdx + 1) % phrases.length;
+                        setTimeout(tick, pauseAfterDelete);
+                        return;
+                    }
+                }
+                setTimeout(tick, deleting ? deleteSpeed : typeSpeed);
             }
-            bioElement.textContent = text;
-            if (!isDeleting && i > fullText.length) {
-                isDeleting = true;
-                setTimeout(type, 1500);
-            } else if (isDeleting && i < 0) {
-                isDeleting = false;
-                currentPhrase = (currentPhrase + 1) % phrases.length;
-                setTimeout(type, 500);
-            } else {
-                const speed = isDeleting ? 40 : 80;
-                setTimeout(type, speed);
-            }
+            tick();
         }
-        type();
 
-        // Snowfall Mouse Trail
+        makeTypewriter('profile-bio', ['I like cs2', 'Owner of /incl', 'Credits to nob for layout idea'], 80, 40, 1500, 400);
+
+        
         const snowflakes = [];
         const maxSnowflakes = 30;
 
@@ -951,7 +984,7 @@
         }
         animateSnow();
 
-        // Optional click burst
+        
         document.addEventListener('click', (e) => {
             for (let i = 0; i < 8; i++) {
                 setTimeout(() => {
@@ -974,7 +1007,7 @@
             }
         });
 
-        // Copy to Clipboard
+        
         function copyToClipboard(value, type) {
             navigator.clipboard.writeText(value).then(() => {
                 notification.textContent = `Copied ${type} address`;
@@ -987,7 +1020,7 @@
             });
         }
 
-        // Volume Control
+        
         const volumeBtn = document.getElementById('volume-btn');
         const volumeSliderContainer = document.getElementById('volume-slider-container');
         const volumeSlider = document.getElementById('volume-slider');
@@ -1006,67 +1039,7 @@
             audio.volume = parseFloat(e.target.value);
         });
 
-        // Like/Dislike System
-        const likeBtn = document.getElementById('like-btn');
-        const dislikeBtn = document.getElementById('dislike-btn');
-        const likeCount = document.getElementById('like-count');
-        const dislikeCount = document.getElementById('dislike-count');
-        let likes = 138;
-        let dislikes = 23;
-        let userVote = null;
-        likeCount.textContent = likes;
-        dislikeCount.textContent = dislikes;
-        function updateVote(type) {
-            if (userVote === type) {
-                if (type === 'like') likes--;
-                else dislikes--;
-                userVote = null;
-                likeBtn.classList.remove('active-like');
-                dislikeBtn.classList.remove('active-dislike');
-            } else {
-                if (userVote === 'like') likes--;
-                else if (userVote === 'dislike') dislikes--;
-                if (type === 'like') {
-                    likes++;
-                    likeBtn.classList.add('active-like');
-                    dislikeBtn.classList.remove('active-dislike');
-                } else {
-                    dislikes++;
-                    dislikeBtn.classList.add('active-dislike');
-                    likeBtn.classList.remove('active-like');
-                }
-                userVote = type;
-            }
-            likeCount.textContent = likes;
-            dislikeCount.textContent = dislikes;
-        }
-        likeBtn.addEventListener('click', () => updateVote('like'));
-        dislikeBtn.addEventListener('click', () => updateVote('dislike'));
-
-        // SONG TITLE & PROGRESS SYNC - FIXED
-        const songTitleEl = document.getElementById('song-title');
-        const progressBar = document.getElementById('progress-bar');
-        const timeLabel = document.getElementById('time-label');
-
-        function formatTime(seconds) {
-            if (isNaN(seconds)) return "0:00";
-            const mins = Math.floor(seconds / 60);
-            const secs = Math.floor(seconds % 60);
-            return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-        }
-
-        function updateProgress() {
-            if (audio.duration) {
-                const percent = (audio.currentTime / audio.duration) * 100;
-                progressBar.style.width = percent + '%';
-                timeLabel.textContent = `${formatTime(audio.currentTime)} / ${formatTime(audio.duration)}`;
-            }
-        }
-
-        audio.addEventListener('timeupdate', updateProgress);
-        audio.addEventListener('loadedmetadata', updateProgress);
-        audio.addEventListener('durationchange', updateProgress);
-
+        
         async function loadMetadata() {
             try {
                 const { parseBlob } = musicMetadata;
@@ -1075,19 +1048,18 @@
                 const blob = await response.blob();
                 const metadata = await parseBlob(blob);
                 const title = metadata.common.title || 'Snares (Judo)';
-                songTitleEl.textContent = title;
+                console.log('Song title:', title); 
             } catch (err) {
                 console.error('Metadata error:', err);
-                songTitleEl.textContent = 'Snares (Judo)';
             }
         }
 
-        // Discord dot color CSS variable
+        
         const style = document.createElement('style');
         style.innerHTML = `.discord-status-dot::after { background: var(--status-color, #747f8d); }`;
         document.head.appendChild(style);
 
-        // DISCORD STATUS
+        
         const DISCORD_ID = '1123405235398901912';
 
         const discordAvatar = document.getElementById('discord-avatar');
@@ -1179,7 +1151,7 @@
                 discordUsername.textContent = 'Failed to load Discord status';
             });
 
-        // Weather Tab Functionality
+        
         const locationLabel = document.getElementById('location-label');
         const weatherTab = document.getElementById('weather-tab');
         const currentWeather = document.getElementById('current-weather');
@@ -1199,54 +1171,53 @@
         locationLabel.addEventListener('click', async () => {
             profileBlock.style.opacity = '0';
             weatherTab.classList.add('visible');
-
-            currentWeather.textContent = 'Loading...';
+            currentWeather.textContent = '...';
             currentDesc.textContent = '';
             weeklyForecast.innerHTML = '';
-
+            document.getElementById('weather-updated').textContent = '';
             try {
                 const url = 'https://api.open-meteo.com/v1/forecast?latitude=47.6062&longitude=-122.3321&daily=temperature_2m_max,temperature_2m_min,weather_code&current=temperature_2m,weather_code&temperature_unit=fahrenheit&timezone=America%2FLos_Angeles&forecast_days=7';
                 const res = await fetch(url);
                 const data = await res.json();
-
                 const currentTempF = Math.round(data.current.temperature_2m);
                 const currentCode = data.current.weather_code;
                 const currentIcon = weatherIcons[currentCode] || '🌡️';
-                const currentDescription = {
+                const descMap = {
                     0: 'Clear sky', 1: 'Mainly clear', 2: 'Partly cloudy', 3: 'Overcast',
-                    45: 'Fog', 51: 'Light rain', 61: 'Rain', 80: 'Rain showers', 95: 'Thunderstorm'
-                }[currentCode] || 'Unknown';
-
-                currentWeather.innerHTML = `${currentIcon} ${currentTempF}°F`;
-                currentDesc.textContent = currentDescription;
-
+                    45: 'Fog', 48: 'Icy fog', 51: 'Light drizzle', 61: 'Rain', 80: 'Rain showers', 95: 'Thunderstorm'
+                };
+                currentWeather.innerHTML = `${currentIcon} ${currentTempF}<span style="font-size:2rem;font-weight:400;opacity:0.7">°F</span>`;
+                currentDesc.textContent = descMap[currentCode] || 'Unknown';
                 const dates = data.daily.time;
                 const highs = data.daily.temperature_2m_max;
                 const lows = data.daily.temperature_2m_min;
                 const codes = data.daily.weather_code;
-
+                const allHighs = highs.map(v => Math.round(v));
+                const allLows = lows.map(v => Math.round(v));
+                const globalMin = Math.min(...allLows);
+                const globalMax = Math.max(...allHighs);
                 dates.forEach((dateStr, i) => {
                     const date = new Date(dateStr);
                     const dayName = i === 0 ? 'Today' : dayNames[date.getDay()];
-                    const high = Math.round(highs[i]);
-                    const low = Math.round(lows[i]);
+                    const high = allHighs[i];
+                    const low = allLows[i];
                     const icon = weatherIcons[codes[i]] || '🌤️';
-
+                    const barLeft = ((low - globalMin) / (globalMax - globalMin)) * 100;
+                    const barWidth = ((high - low) / (globalMax - globalMin)) * 100;
                     const dayEl = document.createElement('div');
                     dayEl.className = 'day-forecast';
                     dayEl.innerHTML = `
                         <span class="day-name">${dayName}</span>
                         <span class="day-icon">${icon}</span>
-                        <span class="day-temps">
-                            <span class="day-low">${low}°</span>
-                            <span>${high}°</span>
-                        </span>
+                        <div class="day-bar-wrap"><div class="day-bar" style="margin-left:${barLeft}%;width:${barWidth}%"></div></div>
+                        <span class="day-temps"><span class="day-low">${low}°</span><span class="day-high">${high}°</span></span>
                     `;
                     weeklyForecast.appendChild(dayEl);
                 });
+                const now = new Date();
+                document.getElementById('weather-updated').textContent = `Updated ${now.toLocaleTimeString('en-US', {hour:'numeric',minute:'2-digit'})}`;
             } catch (err) {
-                currentWeather.textContent = 'Failed to load weather';
-                console.error(err);
+                currentWeather.textContent = 'Failed';
             }
         });
 
@@ -1255,10 +1226,216 @@
             profileBlock.style.opacity = '1';
         });
 
-        // Disable custom cursor on touch devices
+        
         if ('ontouchstart' in window) {
             document.body.classList.add('touch-device');
         }
+
+        
+        function updateClock() {
+            const now = new Date();
+            const pst = new Date(now.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' }));
+            let h = pst.getHours();
+            const m = String(pst.getMinutes()).padStart(2, '0');
+            const s = String(pst.getSeconds()).padStart(2, '0');
+            const ampm = h >= 12 ? 'PM' : 'AM';
+            h = h % 12 || 12;
+            document.getElementById('pst-clock').textContent = `${h}:${m}:${s} ${ampm}`;
+        }
+        updateClock();
+        setInterval(updateClock, 1000);
     </script>
+    
+    <div id="crypto-modal">
+        <div class="crypto-modal-box">
+            <button class="crypto-modal-close" onclick="closeCryptoModal()">×</button>
+            <div class="crypto-modal-name" id="cm-name"></div>
+            <div class="crypto-modal-price" id="cm-price">Loading...</div>
+            <div class="crypto-modal-change" id="cm-change"></div>
+            <div class="crypto-modal-chart">
+                <canvas id="cm-chart"></canvas>
+            </div>
+            <div class="crypto-modal-addr-label">Your Address</div>
+            <div class="crypto-modal-addr" id="cm-addr"></div>
+            <button class="crypto-modal-copy" id="cm-copy-btn">Copy Address</button>
+        </div>
+    </div>
+
+    <script>
+        
+        let cmChart = null;
+
+        function openCryptoModal(name, id, address, color) {
+            document.getElementById('cm-name').textContent = name;
+            document.getElementById('cm-price').textContent = 'Loading...';
+            document.getElementById('cm-price').style.color = color;
+            document.getElementById('cm-change').textContent = '';
+            document.getElementById('cm-addr').textContent = address;
+
+            const copyBtn = document.getElementById('cm-copy-btn');
+            copyBtn.style.background = color;
+            copyBtn.textContent = 'Copy Address';
+            copyBtn.onclick = () => {
+                navigator.clipboard.writeText(address).then(() => {
+                    copyBtn.textContent = '✓ Copied!';
+                    setTimeout(() => copyBtn.textContent = 'Copy Address', 2000);
+                }).catch(() => {
+                    const ta = document.createElement('textarea');
+                    ta.value = address;
+                    document.body.appendChild(ta);
+                    ta.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(ta);
+                    copyBtn.textContent = '✓ Copied!';
+                    setTimeout(() => copyBtn.textContent = 'Copy Address', 2000);
+                });
+            };
+
+            if (cmChart) { cmChart.destroy(); cmChart = null; }
+            document.getElementById('crypto-modal').classList.add('active');
+
+            
+            const krakenPairs = { bitcoin: 'XBTUSD', litecoin: 'LTCUSD', ethereum: 'ETHUSD', solana: 'SOLUSD' };
+
+            async function fetchPrice() {
+                
+                try {
+                    const r = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${id}&vs_currencies=usd&include_24hr_change=true`);
+                    if (!r.ok) throw new Error('rate limited');
+                    const data = await r.json();
+                    const price = data[id]?.usd;
+                    const change = data[id]?.usd_24h_change;
+                    if (!price) throw new Error('no price');
+                    document.getElementById('cm-price').textContent = '$' + price.toLocaleString('en-US', { minimumFractionDigits: 2 });
+                    if (change !== undefined) {
+                        const el = document.getElementById('cm-change');
+                        el.textContent = (change >= 0 ? '▲ ' : '▼ ') + Math.abs(change).toFixed(2) + '% (24h)';
+                        el.style.color = change >= 0 ? '#4cff91' : '#ff5e5e';
+                    }
+                    return;
+                } catch(_) {}
+                
+                try {
+                    const pair = krakenPairs[id];
+                    const r = await fetch(`https://api.kraken.com/0/public/Ticker?pair=${pair}`);
+                    if (!r.ok) throw new Error('kraken error');
+                    const data = await r.json();
+                    const result = data.result[Object.keys(data.result)[0]];
+                    const price = parseFloat(result.c[0]);
+                    const open = parseFloat(result.o);
+                    const change = ((price - open) / open) * 100;
+                    document.getElementById('cm-price').textContent = '$' + price.toLocaleString('en-US', { minimumFractionDigits: 2 });
+                    const el = document.getElementById('cm-change');
+                    el.textContent = (change >= 0 ? '▲ ' : '▼ ') + Math.abs(change).toFixed(2) + '% (24h)';
+                    el.style.color = change >= 0 ? '#4cff91' : '#ff5e5e';
+                } catch(_) {
+                    document.getElementById('cm-price').textContent = 'Unavailable';
+                }
+            }
+            fetchPrice();
+
+            
+            const krakenOHLC = { bitcoin: 'XBTUSD', litecoin: 'LTCUSD', ethereum: 'ETHUSD', solana: 'SOLUSD' };
+
+            async function fetchChart() {
+                let labels = [], prices = [];
+
+                
+                try {
+                    const r = await fetch(`https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=usd&days=7`);
+                    if (!r.ok) throw new Error('rate limited');
+                    const data = await r.json();
+                    if (!data.prices?.length) throw new Error('no data');
+                    labels = data.prices.map(p => new Date(p[0]).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+                    prices = data.prices.map(p => p[1]);
+                } catch(_) {
+                    
+                    try {
+                        const pair = krakenOHLC[id];
+                        const since = Math.floor(Date.now() / 1000) - 7 * 24 * 3600;
+                        const r = await fetch(`https://api.kraken.com/0/public/OHLC?pair=${pair}&interval=1440&since=${since}`);
+                        if (!r.ok) throw new Error('kraken chart error');
+                        const data = await r.json();
+                        const candles = data.result[Object.keys(data.result)[0]];
+                        labels = candles.map(c => new Date(c[0] * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+                        prices = candles.map(c => parseFloat(c[4])); 
+                    } catch(_) { return; }
+                }
+
+                const hex = color.replace('#','');
+                const rv = parseInt(hex.slice(0,2),16);
+                const gv = parseInt(hex.slice(2,4),16);
+                const bv = parseInt(hex.slice(4,6),16);
+
+                const ctx = document.getElementById('cm-chart').getContext('2d');
+                const grad = ctx.createLinearGradient(0, 0, 0, 200);
+                grad.addColorStop(0, `rgba(${rv},${gv},${bv},0.4)`);
+                grad.addColorStop(1, `rgba(${rv},${gv},${bv},0.02)`);
+
+                cmChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels,
+                        datasets: [{
+                            data: prices,
+                            borderColor: color,
+                            backgroundColor: grad,
+                            borderWidth: 2.5,
+                            tension: 0.4,
+                            fill: true,
+                            pointRadius: 0,
+                            pointHoverRadius: 4,
+                            pointHoverBackgroundColor: color
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: { mode: 'index', intersect: false },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: 'rgba(0,0,0,0.8)',
+                                titleColor: color,
+                                bodyColor: '#fff',
+                                padding: 8,
+                                callbacks: {
+                                    label: ctx => '$' + ctx.parsed.y.toLocaleString('en-US', { minimumFractionDigits: 2 })
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: { display: false },
+                                ticks: { color: 'rgba(255,255,255,0.45)', maxTicksLimit: 7 }
+                            },
+                            y: {
+                                grid: { color: 'rgba(255,255,255,0.06)' },
+                                ticks: {
+                                    color: 'rgba(255,255,255,0.55)',
+                                    callback: v => '$' + (v >= 1000 ? (v/1000).toFixed(1)+'k' : v.toFixed(0))
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            fetchChart();
+        }
+
+        function closeCryptoModal() {
+            document.getElementById('crypto-modal').classList.remove('active');
+            if (cmChart) { cmChart.destroy(); cmChart = null; }
+        }
+
+        document.getElementById('crypto-modal').addEventListener('click', e => {
+            if (e.target.id === 'crypto-modal') closeCryptoModal();
+        });
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') closeCryptoModal();
+        });
+    </script>
+
 </body>
 </html>
