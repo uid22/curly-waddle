@@ -153,7 +153,7 @@
             visibility: hidden;
             transition: opacity var(--transition-slow);
             pointer-events: auto;
-            background: linear-gradient(135deg, rgba(0,0,0,0.82), rgba(12,12,12,0.82));
+            background: linear-gradient(135deg, rgba(0,0,0,0.45), rgba(12,12,12,0.45));
             border: 1px solid rgba(255,255,255,0.12);
             border-radius: 1.25rem;
             backdrop-filter: blur(0.9375rem);
@@ -508,8 +508,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 38rem;
-            max-width: 92%;
+            width: 20rem;
             background: linear-gradient(135deg, rgba(0,0,0,0.88), rgba(10,10,10,0.88));
             border: 1px solid rgba(255,255,255,0.1);
             border-radius: 1.25rem;
@@ -521,123 +520,77 @@
             transition: opacity var(--transition-slow);
             color: var(--primary-color);
             overflow: hidden;
-            animation: weatherPop 0.4s ease-out;
-        }
-        @keyframes weatherPop {
-            from { transform: translate(-50%, -50%) scale(0.94); opacity: 0; }
-            to   { transform: translate(-50%, -50%) scale(1);    opacity: 1; }
         }
         #weather-tab.visible {
             opacity: 1;
             visibility: visible;
         }
-        #weather-header {
-            padding: 1.5rem 1.75rem 1.2rem;
+        #weather-hero {
+            padding: 1.4rem 1.4rem 1rem;
             border-bottom: 1px solid rgba(255,255,255,0.07);
         }
-        #weather-location-title {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: rgba(255,255,255,0.4);
-            margin-bottom: 0.3rem;
-        }
         #current-weather {
-            font-size: 4rem;
+            font-size: 2.2rem;
             font-weight: 700;
             line-height: 1;
-            letter-spacing: -0.02em;
+            letter-spacing: -0.01em;
         }
         #current-desc {
-            font-size: 0.95rem;
-            color: rgba(255,255,255,0.55);
-            margin-top: 0.4rem;
-            text-transform: capitalize;
-        }
-        #weather-body {
-            padding: 1.2rem 1.75rem 1.5rem;
-            overflow-y: auto;
-            max-height: 55vh;
+            font-size: 0.78rem;
+            color: rgba(255,255,255,0.4);
+            margin-top: 0.25rem;
         }
         .weekly-forecast {
             display: flex;
             flex-direction: column;
-            gap: 0.3rem;
         }
         .day-forecast {
-            display: flex;
+            display: grid;
+            grid-template-columns: 3rem 1.6rem 1fr auto;
             align-items: center;
-            padding: 0.6rem 0.85rem;
-            border-radius: 0.75rem;
-            transition: background 0.2s;
+            gap: 0.6rem;
+            padding: 0.55rem 1.4rem;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
         }
-        .day-forecast:hover {
-            background: rgba(255,255,255,0.04);
-        }
+        .day-forecast:last-child { border-bottom: none; }
         .day-name {
-            width: 4rem;
-            font-size: 0.95rem;
-            color: rgba(255,255,255,0.85);
-            font-weight: 500;
+            font-size: 0.82rem;
+            color: rgba(255,255,255,0.65);
         }
-        .day-icon {
-            font-size: 1.4rem;
-            width: 2.2rem;
-            text-align: center;
-        }
-        .day-bar-wrap {
-            flex: 1;
-            margin: 0 0.75rem;
-            height: 4px;
-            background: rgba(255,255,255,0.08);
-            border-radius: 2px;
+        .day-icon { font-size: 1rem; }
+        .day-desc {
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.3);
+            white-space: nowrap;
             overflow: hidden;
-        }
-        .day-bar {
-            height: 100%;
-            border-radius: 2px;
-            background: linear-gradient(90deg, rgba(255,255,255,0.25), rgba(255,255,255,0.7));
+            text-overflow: ellipsis;
         }
         .day-temps {
+            font-size: 0.82rem;
             display: flex;
-            gap: 0.6rem;
-            font-size: 0.9rem;
-            min-width: 5rem;
+            gap: 0.4rem;
             justify-content: flex-end;
         }
-        .day-low {
-            color: rgba(255,255,255,0.35);
-        }
-        .day-high {
-            color: rgba(255,255,255,0.9);
-            font-weight: 600;
-        }
+        .day-low { color: rgba(255,255,255,0.3); }
+        .day-high { color: white; font-weight: 600; }
         #weather-footer {
-            padding: 0.9rem 1.75rem;
+            padding: 0.75rem 1.4rem;
             border-top: 1px solid rgba(255,255,255,0.07);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
         }
         .back-btn {
             background: none;
-            border: 1px solid rgba(255,255,255,0.15);
-            color: rgba(255,255,255,0.6);
-            padding: 0.5rem 1.1rem;
-            border-radius: 0.6rem;
+            border: none;
+            color: rgba(255,255,255,0.4);
+            padding: 0;
             cursor: pointer;
-            font-size: 0.85rem;
-            transition: all 0.2s;
+            font-size: 0.8rem;
+            font-family: 'Inter', sans-serif;
+            transition: color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
         }
-        .back-btn:hover {
-            background: rgba(255,255,255,0.07);
-            color: white;
-            border-color: rgba(255,255,255,0.3);
-        }
-        #weather-updated {
-            font-size: 0.72rem;
-            color: rgba(255,255,255,0.25);
-        }
+        .back-btn:hover { color: white; }
 
         
         #crypto-modal {
@@ -836,17 +789,13 @@
     </div>
 
     <div id="weather-tab">
-        <div id="weather-header">
-            <div id="weather-location-title">Washington State</div>
+        <div id="weather-hero">
             <div id="current-weather">--</div>
             <div id="current-desc"></div>
         </div>
-        <div id="weather-body">
-            <div class="weekly-forecast" id="weekly-forecast"></div>
-        </div>
+        <div class="weekly-forecast" id="weekly-forecast"></div>
         <div id="weather-footer">
-            <button class="back-btn" id="back-btn">← Back</button>
-            <div id="weather-updated"></div>
+            <button class="back-btn" id="back-btn">← back to profile</button>
         </div>
     </div>
 
@@ -926,7 +875,7 @@
             tick();
         }
 
-        makeTypewriter('profile-bio', ['I like cs2', 'Owner of /incl', 'Credits to nob for layout idea'], 80, 40, 1500, 400);
+        makeTypewriter('profile-bio', ['locked in', 'I love gambling', 'passion project'], 80, 40, 1500, 400);
 
         
         const snowflakes = [];
@@ -1174,7 +1123,6 @@
             currentWeather.textContent = '...';
             currentDesc.textContent = '';
             weeklyForecast.innerHTML = '';
-            document.getElementById('weather-updated').textContent = '';
             try {
                 const url = 'https://api.open-meteo.com/v1/forecast?latitude=47.6062&longitude=-122.3321&daily=temperature_2m_max,temperature_2m_min,weather_code&current=temperature_2m,weather_code&temperature_unit=fahrenheit&timezone=America%2FLos_Angeles&forecast_days=7';
                 const res = await fetch(url);
@@ -1182,40 +1130,26 @@
                 const currentTempF = Math.round(data.current.temperature_2m);
                 const currentCode = data.current.weather_code;
                 const currentIcon = weatherIcons[currentCode] || '🌡️';
-                const descMap = {
-                    0: 'Clear sky', 1: 'Mainly clear', 2: 'Partly cloudy', 3: 'Overcast',
-                    45: 'Fog', 48: 'Icy fog', 51: 'Light drizzle', 61: 'Rain', 80: 'Rain showers', 95: 'Thunderstorm'
-                };
-                currentWeather.innerHTML = `${currentIcon} ${currentTempF}<span style="font-size:2rem;font-weight:400;opacity:0.7">°F</span>`;
-                currentDesc.textContent = descMap[currentCode] || 'Unknown';
+                const descMap = {0:'Clear',1:'Mainly clear',2:'Partly cloudy',3:'Overcast',45:'Fog',48:'Icy fog',51:'Light drizzle',61:'Rain',80:'Showers',95:'Thunderstorm'};
+                currentWeather.textContent = `${currentIcon} ${currentTempF}°F`;
+                currentDesc.textContent = descMap[currentCode] || '';
                 const dates = data.daily.time;
                 const highs = data.daily.temperature_2m_max;
                 const lows = data.daily.temperature_2m_min;
                 const codes = data.daily.weather_code;
-                const allHighs = highs.map(v => Math.round(v));
-                const allLows = lows.map(v => Math.round(v));
-                const globalMin = Math.min(...allLows);
-                const globalMax = Math.max(...allHighs);
                 dates.forEach((dateStr, i) => {
                     const date = new Date(dateStr);
                     const dayName = i === 0 ? 'Today' : dayNames[date.getDay()];
-                    const high = allHighs[i];
-                    const low = allLows[i];
+                    const high = Math.round(highs[i]);
+                    const low = Math.round(lows[i]);
                     const icon = weatherIcons[codes[i]] || '🌤️';
-                    const barLeft = ((low - globalMin) / (globalMax - globalMin)) * 100;
-                    const barWidth = ((high - low) / (globalMax - globalMin)) * 100;
                     const dayEl = document.createElement('div');
                     dayEl.className = 'day-forecast';
-                    dayEl.innerHTML = `
-                        <span class="day-name">${dayName}</span>
-                        <span class="day-icon">${icon}</span>
-                        <div class="day-bar-wrap"><div class="day-bar" style="margin-left:${barLeft}%;width:${barWidth}%"></div></div>
-                        <span class="day-temps"><span class="day-low">${low}°</span><span class="day-high">${high}°</span></span>
-                    `;
+                    const descMap2 = {0:'Clear',1:'Clear',2:'Partly cloudy',3:'Overcast',45:'Fog',48:'Fog',51:'Drizzle',61:'Rain',80:'Showers',95:'Thunder'};
+                    const shortDesc = descMap2[codes[i]] || '';
+                    dayEl.innerHTML = `<span class="day-name">${dayName}</span><span class="day-icon">${icon}</span><span class="day-desc">${shortDesc}</span><span class="day-temps"><span class="day-low">${low}°</span><span class="day-high">${high}°</span></span>`;
                     weeklyForecast.appendChild(dayEl);
                 });
-                const now = new Date();
-                document.getElementById('weather-updated').textContent = `Updated ${now.toLocaleTimeString('en-US', {hour:'numeric',minute:'2-digit'})}`;
             } catch (err) {
                 currentWeather.textContent = 'Failed';
             }
