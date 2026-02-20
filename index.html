@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>LinkPage – Terms of Service</title>
+  <title>LinkPage – Sign in or create account</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -27,14 +27,13 @@
       min-height: 100vh;
       overflow-x: hidden;
       position: relative;
-      line-height: 1.7;
     }
 
     /* STAR BACKGROUND */
     .bubbles {
       position: fixed;
       inset: 0;
-      z-index: -1;
+      z-index: 0;
       pointer-events: none;
       overflow: hidden;
     }
@@ -67,7 +66,7 @@
         0 0 70px 25px rgba(249,196,255,0.3);
       opacity: 0;
       pointer-events: none;
-      z-index: -1;
+      z-index: 1;
     }
     @keyframes fly {
       0%   { opacity: 0; transform: translate(0, 0); }
@@ -76,64 +75,109 @@
       100% { opacity: 0; transform: translate(var(--dx), var(--dy)); }
     }
 
-    .content-card {
+    /* GLASS CARD */
+    .glass-card {
       background: rgba(18, 10, 25, 0.5);
       backdrop-filter: blur(20px) saturate(180%);
       -webkit-backdrop-filter: blur(20px) saturate(180%);
       border: 1px solid rgba(249,196,255,0.22);
       border-radius: 24px;
       box-shadow: 0 12px 40px rgba(249,196,255,0.18);
-      padding: 3rem;
-      max-width: 900px;
-      margin: 4rem auto;
+      overflow: hidden;
+      position: relative;
+      z-index: 10;
+    }
+    .glass-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        135deg,
+        rgba(249,196,255,0.08) 0%,
+        rgba(249,196,255,0.03) 50%,
+        rgba(0,0,0,0.2) 100%
+      );
+      pointer-events: none;
+      z-index: -1;
     }
 
-    h1, h2, h3 {
-      color: var(--pink-bright);
-      font-weight: 700;
+    .input-field {
+      background: rgba(30, 20, 40, 0.65);
+      border: 1px solid rgba(249,196,255,0.18);
+      border-radius: 14px;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(8px);
     }
-
-    h1 {
-      font-size: 2.8rem;
-      margin-bottom: 1.5rem;
-      text-align: center;
-      text-shadow: 0 0 20px rgba(249,196,255,0.4);
+    .input-field:focus-within {
+      border-color: var(--pink-bright);
+      box-shadow: 0 0 0 4px var(--pink-glow);
+      background: rgba(40, 25, 55, 0.75);
     }
-
-    a {
-      color: var(--pink-bright);
-      text-decoration: underline;
-      transition: all 0.2s;
-    }
-    a:hover {
-      color: white;
-      text-shadow: 0 0 10px var(--pink-glow);
-    }
-
-    .section {
-      margin-bottom: 3rem;
-    }
-
-    .last-updated {
-      text-align: center;
+    .input-field input::placeholder {
       color: #888;
-      font-size: 0.95rem;
-      margin-top: 4rem;
-      padding-top: 2rem;
-      border-top: 1px solid rgba(249,196,255,0.15);
     }
 
-    @media (max-width: 768px) {
-      .content-card {
-        padding: 2rem 1.5rem;
-        margin: 2rem 1rem;
-      }
-      h1 { font-size: 2.2rem; }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--pink-bright), var(--pink-dark));
+      border: none;
+      color: #000;
+      font-weight: 700;
+      transition: all 0.35s ease;
+      box-shadow: 0 6px 20px var(--pink-glow);
+    }
+    .btn-primary:hover {
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 15px 40px rgba(249,196,255,0.7);
+    }
+
+    .tab-active {
+      color: #000;
+      background: var(--pink-bright);
+      border-bottom: 3px solid #000;
+    }
+    .tab-inactive {
+      color: var(--text-muted);
+    }
+    .tab-inactive:hover {
+      color: var(--text-light);
+      background: rgba(249,196,255,0.1);
+    }
+
+    /* FORM ANIMATION */
+    .form-wrapper {
+      position: relative;
+      overflow: hidden;
+      min-height: 260px;
+    }
+    .form-page {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transform: translateY(24px);
+      transition: all 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+      pointer-events: none;
+    }
+    .form-page.active {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+    .form-page:not(.active) {
+      transition-duration: 0.32s;
+      transform: translateY(-14px);
+    }
+
+    /* Footer links style */
+    .footer-link {
+      color: var(--text-muted);
+      transition: color 0.2s;
+    }
+    .footer-link:hover {
+      color: var(--pink-bright);
     }
   </style>
 </head>
 <body>
-
   <!-- STAR BACKGROUND -->
   <div class="bubbles" id="starContainer">
     <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
@@ -142,105 +186,80 @@
     <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
   </div>
 
-  <div class="content-card">
-    <h1>Terms of Service</h1>
+  <div class="flex items-center justify-center min-h-screen p-6 relative z-10">
+    <div class="w-full max-w-md">
+      <!-- Logo with glow -->
+      <div class="text-center mb-10">
+        <h1 class="text-6xl font-black tracking-tighter text-white drop-shadow-[0_0_30px_rgba(249,196,255,0.7)]">
+          LinkPage
+        </h1>
+      </div>
 
-    <p class="text-center text-gray-400 mb-12">
-      Last updated: February 19, 2026
-    </p>
+      <!-- Glass card -->
+      <div class="glass-card p-8 md:p-10">
+        <!-- Tabs -->
+        <div class="flex mb-8 border-b border-white/5">
+          <button id="tab-signin" class="tab-active px-6 py-3 font-bold text-lg flex-1 text-center transition-all rounded-t-lg" onclick="showForm('signin')">
+            Sign in
+          </button>
+          <button id="tab-signup" class="tab-inactive px-6 py-3 font-bold text-lg flex-1 text-center transition-all rounded-t-lg" onclick="showForm('signup')">
+            Create account
+          </button>
+        </div>
 
-    <div class="section">
-      <h2>1. Acceptance of Terms</h2>
-      <p>
-        By accessing or using LinkPage (the "Service"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree with any part of these terms, you may not use the Service.
-      </p>
-      <p>
-        We reserve the right to update or modify these Terms at any time. We will notify you of material changes by posting the updated Terms on this page and updating the "Last updated" date.
-      </p>
-    </div>
+        <!-- Forms wrapper -->
+        <div class="form-wrapper">
+          <!-- Sign In -->
+          <form id="form-signin" class="form-page space-y-6 active">
+            <div>
+              <label class="block text-sm font-medium text-gray-200 mb-2">Email or username</label>
+              <div class="input-field">
+                <input type="text" placeholder="you@example.com" class="w-full bg-transparent px-5 py-4 text-white placeholder-gray-600 focus:outline-none" required />
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-200 mb-2">Password</label>
+              <div class="input-field relative">
+                <input type="password" id="signin-password" placeholder="••••••••" class="w-full bg-transparent px-5 py-4 text-white placeholder-gray-600 focus:outline-none pr-12" required />
+                <button type="button" onclick="togglePassword('signin-password', this)" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[var(--pink-bright)] transition-colors">👁</button>
+              </div>
+            </div>
+            <div class="flex items-center justify-between text-sm">
+              <label class="flex items-center gap-2">
+                <input type="checkbox" class="h-4 w-4 bg-transparent border-[var(--pink-bright)]/40 rounded accent-[var(--pink-bright)]" />
+                <span class="text-gray-200">Stay signed in</span>
+              </label>
+              <a href="#" class="text-gray-200 hover:text-[var(--pink-bright)] hover:underline">Forgot password?</a>
+            </div>
+            <button type="button" onclick="fakeSubmit(this, 'Signing in...')" class="btn-primary w-full py-4 rounded-xl font-bold text-lg mt-2">
+              Sign in
+            </button>
+          </form>
 
-    <div class="section">
-      <h2>2. Description of Service</h2>
-      <p>
-        LinkPage is a platform that allows users to create personalized link-in-bio pages, share content, and connect with others. Access to certain features may require a valid invite code during the account creation process.
-      </p>
-      <p>
-        The Service is currently in beta and invite-only. We may change, suspend, or discontinue any part of the Service at any time without notice.
-      </p>
-    </div>
+          <!-- Create Account - only invite code -->
+          <form id="form-signup" class="form-page space-y-6">
+            <div>
+              <label class="block text-sm font-medium text-gray-200 mb-2">
+                Invite code <span class="text-[var(--pink-bright)] text-xs ml-1.5">(required)</span>
+              </label>
+              <div class="input-field">
+                <input type="text" placeholder="XXXX-XXXX-XXXX" id="invite-code" pattern="[A-Za-z0-9\-]{11,14}" title="Format: XXXX-XXXX-XXXX" class="w-full bg-transparent px-5 py-4 text-white placeholder-gray-600 focus:outline-none" required autofocus />
+              </div>
+              <p class="mt-2 text-xs text-gray-500">Enter your invite code</p>
+            </div>
+            <button type="button" onclick="fakeSignup(this)" class="btn-primary w-full py-4 rounded-xl font-bold text-lg mt-4">
+              Create account
+            </button>
+          </form>
+        </div>
 
-    <div class="section">
-      <h2>3. Accounts & Invite Codes</h2>
-      <p>
-        To create an account, you must provide a valid invite code. Invite codes are single-use or limited-use and may expire or be revoked at any time.
-      </p>
-      <p>
-        You are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account. You agree to notify us immediately of any unauthorized use.
-      </p>
-    </div>
-
-    <div class="section">
-      <h2>4. User Content</h2>
-      <p>
-        You retain ownership of any content you post or upload to the Service ("User Content"). By posting User Content, you grant us a worldwide, non-exclusive, royalty-free license to use, display, reproduce, and distribute it in connection with operating and promoting the Service.
-      </p>
-      <p>
-        You agree not to post content that is unlawful, harmful, threatening, abusive, harassing, defamatory, vulgar, obscene, libelous, invasive of privacy, or otherwise objectionable.
-      </p>
-    </div>
-
-    <div class="section">
-      <h2>5. Prohibited Conduct</h2>
-      <p>You agree not to:</p>
-      <ul class="list-disc pl-6 space-y-2 mt-3">
-        <li>Use the Service for any illegal purpose or in violation of any applicable law</li>
-        <li>Attempt to gain unauthorized access to any part of the Service</li>
-        <li>Interfere with or disrupt the Service or servers/networks connected to the Service</li>
-        <li>Impersonate any person or entity</li>
-        <li>Engage in spamming, phishing, or other fraudulent activity</li>
-        <li>Share or sell invite codes without authorization</li>
-      </ul>
-    </div>
-
-    <div class="section">
-      <h2>6. Termination</h2>
-      <p>
-        We may suspend or terminate your access to the Service at any time, without notice, for conduct that we believe violates these Terms or is harmful to other users, us, or third parties.
-      </p>
-    </div>
-
-    <div class="section">
-      <h2>7. Disclaimer of Warranties</h2>
-      <p>
-        THE SERVICE IS PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTIES OF ANY KIND, EXPRESS OR IMPLIED. WE DO NOT WARRANT THAT THE SERVICE WILL BE UNINTERRUPTED, ERROR-FREE, OR FREE OF VIRUSES OR OTHER HARMFUL COMPONENTS.
-      </p>
-    </div>
-
-    <div class="section">
-      <h2>8. Limitation of Liability</h2>
-      <p>
-        TO THE FULLEST EXTENT PERMITTED BY LAW, LINKPAGE SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES ARISING FROM YOUR USE OF THE SERVICE.
-      </p>
-    </div>
-
-    <div class="section">
-      <h2>9. Governing Law</h2>
-      <p>
-        These Terms shall be governed by the laws of the State of Washington, United States, without regard to conflict of law principles.
-      </p>
-    </div>
-
-    <div class="section">
-      <h2>10. Contact Us</h2>
-      <p>
-        If you have any questions about these Terms, please contact us at:
-        <br>
-        <a href="mailto:support@linkpage.example">support@linkpage.example</a>
-      </p>
-    </div>
-
-    <div class="last-updated">
-      © 2026 LinkPage. All rights reserved.
+        <!-- Updated footer links -->
+        <p class="text-center text-sm text-gray-500 mt-8">
+          By continuing, you agree to our 
+          <a href="tos.html" class="footer-link">Terms</a> & 
+          <a href="tos.html" class="footer-link">Privacy Policy</a>
+        </p>
+      </div>
     </div>
   </div>
 
@@ -272,8 +291,58 @@
       setTimeout(createShootingStar, 900 + Math.random() * 2400);
     }
 
+    function showForm(type) {
+      const signin  = document.getElementById('form-signin');
+      const signup  = document.getElementById('form-signup');
+      const tabSignin = document.getElementById('tab-signin');
+      const tabSignup = document.getElementById('tab-signup');
+
+      if (type === 'signin') {
+        signin.classList.add('active');
+        signup.classList.remove('active');
+        tabSignin.classList.add('tab-active');
+        tabSignin.classList.remove('tab-inactive');
+        tabSignup.classList.remove('tab-active');
+        tabSignup.classList.add('tab-inactive');
+      } else {
+        signup.classList.add('active');
+        signin.classList.remove('active');
+        tabSignup.classList.add('tab-active');
+        tabSignup.classList.remove('tab-inactive');
+        tabSignin.classList.remove('tab-active');
+        tabSignin.classList.add('tab-inactive');
+      }
+    }
+
+    function togglePassword(id, btn) {
+      const input = document.getElementById(id);
+      input.type = input.type === 'password' ? 'text' : 'password';
+      btn.textContent = input.type === 'password' ? '👁' : '🙈';
+    }
+
+    function fakeSubmit(btn, loadingText = 'Processing...') {
+      const original = btn.innerHTML;
+      btn.disabled = true;
+      btn.textContent = loadingText;
+      setTimeout(() => {
+        btn.innerHTML = original;
+        btn.disabled = false;
+        alert("Success (demo mode)");
+      }, 1400);
+    }
+
+    function fakeSignup(btn) {
+      const code = document.getElementById('invite-code').value.trim();
+      if (!code || !/^[A-Za-z0-9\-]{11,14}$/.test(code)) {
+        alert("Please enter a valid invite code (XXXX-XXXX-XXXX)");
+        return;
+      }
+      fakeSubmit(btn, 'Creating account...');
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
       setTimeout(createShootingStar, 500);
+      showForm('signin');
     });
   </script>
 </body>
