@@ -716,7 +716,7 @@
         <div id="intro-text">Click to Enter</div>
     </div>
 
-    <video id="background-video" autoplay loop playsinline>
+    <video id="background-video" autoplay loop muted playsinline preload="auto">
         <source src="background.mp4" type="video/mp4">
     </video>
     <!-- <audio id="background-audio" loop preload="auto">
@@ -829,9 +829,13 @@
             backgroundVideo.classList.add('visible');
             backgroundVideo.muted = false;
             backgroundVideo.volume = 1.0;
-            backgroundVideo.play().catch((error) => {
+            
+            console.log('Attempting to play video:', backgroundVideo.src || 'source element');
+            backgroundVideo.play().then(() => {
+                console.log('Video playing successfully');
+            }).catch((error) => {
                 console.error('Video playback failed:', error);
-                notification.textContent = 'Click again to enable audio';
+                notification.textContent = 'Click again to enable audio/video';
                 notification.classList.add('show');
                 setTimeout(() => notification.classList.remove('show'), 3000);
             });
