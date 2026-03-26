@@ -716,8 +716,7 @@
         <div id="intro-text">Click to Enter</div>
     </div>
 
-    <video id="background-video" autoplay loop muted playsinline preload="auto">
-        <source src="background.mp4" type="video/mp4">
+    <video id="background-video" src="background.mp4" poster="poster.png" autoplay loop muted playsinline preload="auto">
     </video>
     <!-- <audio id="background-audio" loop preload="auto">
         <source src="Audio.mp3" type="audio/mpeg">
@@ -826,26 +825,41 @@
 
             introScreen.classList.add('hidden');
 
-            backgroundVideo.classList.add('visible');
             backgroundVideo.muted = false;
             backgroundVideo.volume = 1.0;
             
-            console.log('Attempting to play video:', backgroundVideo.src || 'source element');
-            backgroundVideo.play().then(() => {
+            const handlePlay = () => {
+                backgroundVideo.classList.add('visible');
                 console.log('Video playing successfully');
-            }).catch((error) => {
+            };
+
+            console.log('Attempting to play video:', backgroundVideo.src);
+            backgroundVideo.play().then(handlePlay).catch((error) => {
                 console.error('Video playback failed:', error);
-                notification.textContent = 'Click again to enable audio/video';
+                notification.textContent = 'Error: ' + error.message;
                 notification.classList.add('show');
-                setTimeout(() => notification.classList.remove('show'), 3000);
+                // Fallback: show the website anyway if video fails
+                setTimeout(() => {
+                    profileBlock.classList.add('visible');
+                    volumeControl.classList.add('visible');
+                }, 1000);
             });
+
+            // If it takes too long to load, show the profile anyway
+            setTimeout(() => {
+                if (!profileBlock.classList.contains('visible')) {
+                    profileBlock.classList.add('visible');
+                    volumeControl.classList.add('visible');
+                }
+            }, 5000);
 
             // loadMetadata();
 
-            
             setTimeout(() => {
-                profileBlock.classList.add('visible');
-                volumeControl.classList.add('visible');
+                if (!profileBlock.classList.contains('visible')) {
+                    profileBlock.classList.add('visible');
+                    volumeControl.classList.add('visible');
+                }
             }, 3300);
         }, { once: true });
 
