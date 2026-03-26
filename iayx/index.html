@@ -716,7 +716,9 @@
         <div id="intro-text">Click to Enter</div>
     </div>
 
-    <video id="background-video" src="background.mp4" poster="poster.png" autoplay loop muted playsinline preload="auto">
+    <video id="background-video" src="background.mp4" autoplay loop muted playsinline preload="auto" poster="poster.png" style="background: black;">
+        <source src="background.mp4" type="video/mp4">
+        Your browser does not support the video tag.
     </video>
     <!-- <audio id="background-audio" loop preload="auto">
         <source src="Audio.mp3" type="audio/mpeg">
@@ -828,39 +830,38 @@
             backgroundVideo.muted = false;
             backgroundVideo.volume = 1.0;
             
-            const handlePlay = () => {
-                backgroundVideo.classList.add('visible');
-                console.log('Video playing successfully');
+            console.log('Video Current Src:', backgroundVideo.currentSrc || backgroundVideo.src);
+            console.log('Video Network State:', backgroundVideo.networkState);
+            console.log('Video Ready State:', backgroundVideo.readyState);
+
+            const startPlayback = () => {
+                backgroundVideo.play().then(() => {
+                    backgroundVideo.classList.add('visible');
+                    console.log('Video playing successfully');
+                }).catch((error) => {
+                    console.error('Video play() failed:', error);
+                    notification.textContent = `Playback error: ${error.message}`;
+                    notification.classList.add('show');
+                });
             };
 
-            console.log('Attempting to play video:', backgroundVideo.src);
-            backgroundVideo.play().then(handlePlay).catch((error) => {
-                console.error('Video playback failed:', error);
-                notification.textContent = 'Error: ' + error.message;
-                notification.classList.add('show');
-                // Fallback: show the website anyway if video fails
-                setTimeout(() => {
-                    profileBlock.classList.add('visible');
-                    volumeControl.classList.add('visible');
-                }, 1000);
-            });
+            // Force load and play
+            backgroundVideo.load();
+            
+            // Check if it's already ready, otherwise wait for it
+            if (backgroundVideo.readyState >= 3) {
+                startPlayback();
+            } else {
+                backgroundVideo.oncanplay = startPlayback;
+            }
 
-            // If it takes too long to load, show the profile anyway
+            // Fallback for UI if video never loads
             setTimeout(() => {
                 if (!profileBlock.classList.contains('visible')) {
                     profileBlock.classList.add('visible');
                     volumeControl.classList.add('visible');
                 }
-            }, 5000);
-
-            // loadMetadata();
-
-            setTimeout(() => {
-                if (!profileBlock.classList.contains('visible')) {
-                    profileBlock.classList.add('visible');
-                    volumeControl.classList.add('visible');
-                }
-            }, 3300);
+            }, 3000);
         }, { once: true });
 
         
