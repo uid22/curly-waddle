@@ -716,12 +716,12 @@
         <div id="intro-text">Click to Enter</div>
     </div>
 
-    <video id="background-video" autoplay loop muted playsinline>
+    <video id="background-video" autoplay loop playsinline>
         <source src="background.mp4" type="video/mp4">
     </video>
-    <audio id="background-audio" loop preload="auto">
+    <!-- <audio id="background-audio" loop preload="auto">
         <source src="Audio.mp3" type="audio/mpeg">
-    </audio>
+    </audio> -->
 
     <div id="profile-block">
 
@@ -815,7 +815,6 @@
         const introScreen = document.getElementById('intro-screen');
         const profileBlock = document.getElementById('profile-block');
         const backgroundVideo = document.getElementById('background-video');
-        const audio = document.getElementById('background-audio');
         const notification = document.getElementById('notification');
         const volumeControl = document.getElementById('volume-control');
 
@@ -828,16 +827,16 @@
             introScreen.classList.add('hidden');
 
             backgroundVideo.classList.add('visible');
-            audio.muted = false;
-            audio.volume = 1.0;
-            audio.play().catch((error) => {
-                console.error('Audio playback failed:', error);
+            backgroundVideo.muted = false;
+            backgroundVideo.volume = 1.0;
+            backgroundVideo.play().catch((error) => {
+                console.error('Video playback failed:', error);
                 notification.textContent = 'Click again to enable audio';
                 notification.classList.add('show');
                 setTimeout(() => notification.classList.remove('show'), 3000);
             });
 
-            loadMetadata();
+            // loadMetadata();
 
             
             setTimeout(() => {
@@ -973,7 +972,7 @@
         const volumeBtn = document.getElementById('volume-btn');
         const volumeSliderContainer = document.getElementById('volume-slider-container');
         const volumeSlider = document.getElementById('volume-slider');
-        audio.volume = 1.0;
+        backgroundVideo.volume = 1.0;
         volumeSlider.value = 1.0;
         volumeBtn.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -985,7 +984,7 @@
             }
         });
         volumeSlider.addEventListener('input', (e) => {
-            audio.volume = parseFloat(e.target.value);
+            backgroundVideo.volume = parseFloat(e.target.value);
         });
 
         
