@@ -834,6 +834,22 @@
             console.log('Video Network State:', backgroundVideo.networkState);
             console.log('Video Ready State:', backgroundVideo.readyState);
 
+            // Deep diagnostic fetch
+            fetch('background.mp4', { method: 'HEAD' }).then(res => {
+                console.log('Fetch Check background.mp4:', res.status, res.statusText);
+                console.log('Content-Type:', res.headers.get('content-type'));
+                console.log('Content-Length:', res.headers.get('content-length'));
+                if (!res.ok) {
+                    notification.textContent = `Server Error: ${res.status} ${res.statusText} on background.mp4`;
+                    notification.classList.add('show');
+                } else if (parseInt(res.headers.get('content-length') || '0') < 1000) {
+                    notification.textContent = `Warning: background.mp4 is too small (${res.headers.get('content-length')} bytes). Possible Git LFS error.`;
+                    notification.classList.add('show');
+                }
+            }).catch(err => {
+                console.error('Fetch check failed:', err);
+            });
+
             const startPlayback = () => {
                 backgroundVideo.play().then(() => {
                     backgroundVideo.classList.add('visible');
